@@ -1,0 +1,46 @@
+[24-Sep-2025 12:56:21 UTC] PHP Fatal error:  Maximum call stack size of 8339456 bytes (zend.max_allowed_stack_size - zend.reserved_stack_size) reached during compilation. Try splitting expression in /home2/doctoraz/public_html/storage/framework/views/842fd57f74e4fc050ecf3283dc75dbf7.php on line 36
+[24-Sep-2025 13:01:34 UTC] PHP Fatal error:  Maximum call stack size of 8339456 bytes (zend.max_allowed_stack_size - zend.reserved_stack_size) reached during compilation. Try splitting expression in /home2/doctoraz/public_html/storage/framework/views/842fd57f74e4fc050ecf3283dc75dbf7.php on line 36
+[24-Sep-2025 13:04:43 UTC] PHP Fatal error:  Maximum call stack size of 8339456 bytes (zend.max_allowed_stack_size - zend.reserved_stack_size) reached during compilation. Try splitting expression in /home2/doctoraz/public_html/storage/framework/views/842fd57f74e4fc050ecf3283dc75dbf7.php on line 41
+[24-Sep-2025 13:07:27 UTC] PHP Fatal error:  Maximum call stack size of 8339456 bytes (zend.max_allowed_stack_size - zend.reserved_stack_size) reached during compilation. Try splitting expression in /home2/doctoraz/public_html/storage/framework/views/842fd57f74e4fc050ecf3283dc75dbf7.php on line 41
+[24-Sep-2025 13:09:55 UTC] PHP Fatal error:  Maximum call stack size of 8339456 bytes (zend.max_allowed_stack_size - zend.reserved_stack_size) reached during compilation. Try splitting expression in /home2/doctoraz/public_html/storage/framework/views/842fd57f74e4fc050ecf3283dc75dbf7.php on line 36
+[24-Sep-2025 13:12:58 UTC] PHP Fatal error:  Maximum call stack size of 8339456 bytes (zend.max_allowed_stack_size - zend.reserved_stack_size) reached during compilation. Try splitting expression in /home2/doctoraz/public_html/storage/framework/views/842fd57f74e4fc050ecf3283dc75dbf7.php on line 54
+[24-Sep-2025 23:12:59 UTC] PHP Fatal error:  Maximum call stack size of 8339456 bytes (zend.max_allowed_stack_size - zend.reserved_stack_size) reached during compilation. Try splitting expression in /home2/doctoraz/public_html/storage/framework/views/842fd57f74e4fc050ecf3283dc75dbf7.php on line 41
+[24-Sep-2025 23:21:19 UTC] PHP Fatal error:  Maximum call stack size of 8339456 bytes (zend.max_allowed_stack_size - zend.reserved_stack_size) reached during compilation. Try splitting expression in /home2/doctoraz/public_html/storage/framework/views/842fd57f74e4fc050ecf3283dc75dbf7.php on line 41
+[26-Sep-2025 11:48:27 UTC] PHP Warning:  require(/home2/doctoraz/public_html/public/vendor/autoload.php): Failed to open stream: No such file or directory in /home2/doctoraz/public_html/public/index.php on line 13
+[26-Sep-2025 11:48:27 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home2/doctoraz/public_html/public/vendor/autoload.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home2/doctoraz/public_html/public/index.php:13
+Stack trace:
+#0 {main}
+  thrown in /home2/doctoraz/public_html/public/index.php on line 13
+[26-Sep-2025 11:48:31 UTC] PHP Warning:  require(/home2/doctoraz/public_html/public/vendor/autoload.php): Failed to open stream: No such file or directory in /home2/doctoraz/public_html/public/index.php on line 13
+[26-Sep-2025 11:48:31 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home2/doctoraz/public_html/public/vendor/autoload.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home2/doctoraz/public_html/public/index.php:13
+Stack trace:
+#0 {main}
+  thrown in /home2/doctoraz/public_html/public/index.php on line 13
+[26-Sep-2025 11:48:31 UTC] PHP Warning:  require(/home2/doctoraz/public_html/public/vendor/autoload.php): Failed to open stream: No such file or directory in /home2/doctoraz/public_html/public/index.php on line 13
+[26-Sep-2025 11:48:31 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home2/doctoraz/public_html/public/vendor/autoload.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home2/doctoraz/public_html/public/index.php:13
+Stack trace:
+#0 {main}
+  thrown in /home2/doctoraz/public_html/public/index.php on line 13
+[26-Sep-2025 11:48:37 UTC] PHP Warning:  require(/home2/doctoraz/public_html/public/vendor/autoload.php): Failed to open stream: No such file or directory in /home2/doctoraz/public_html/public/index.php on line 13
+[26-Sep-2025 11:48:37 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home2/doctoraz/public_html/public/vendor/autoload.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home2/doctoraz/public_html/public/index.php:13
+Stack trace:
+#0 {main}
+  thrown in /home2/doctoraz/public_html/public/index.php on line 13
+[26-Sep-2025 11:48:37 UTC] PHP Warning:  require(/home2/doctoraz/public_html/public/vendor/autoload.php): Failed to open stream: No such file or directory in /home2/doctoraz/public_html/public/index.php on line 13
+[26-Sep-2025 11:48:37 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home2/doctoraz/public_html/public/vendor/autoload.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home2/doctoraz/public_html/public/index.php:13
+Stack trace:
+#0 {main}
+  thrown in /home2/doctoraz/public_html/public/index.php on line 13
+[26-Sep-2025 11:48:44 UTC] PHP Warning:  require(/home2/doctoraz/public_html/public/vendor/autoload.php): Failed to open stream: No such file or directory in /home2/doctoraz/public_html/public/index.php on line 13
+[26-Sep-2025 11:48:44 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home2/doctoraz/public_html/public/vendor/autoload.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home2/doctoraz/public_html/public/index.php:13
+Stack trace:
+#0 {main}
+  thrown in /home2/doctoraz/public_html/public/index.php on line 13
+[02-Oct-2025 16:13:54 UTC] PHP Fatal error:  Cannot use Illuminate\Support\Facades\Storage as Storage because the name is already in use in /home2/doctoraz/public_html/storage/framework/views/d2dc12d3c1b8f0918c44b81f6636a9a5.php on line 262
+[10-Oct-2025 10:12:14 UTC] PHP Fatal error:  Cannot declare class App\Http\Controllers\DoctorListAjax, because the name is already in use in /home2/doctoraz/public_html/app/Models/Doctor.php on line 19
+[10-Oct-2025 10:12:22 UTC] PHP Fatal error:  Cannot declare class App\Http\Controllers\DoctorListAjax, because the name is already in use in /home2/doctoraz/public_html/app/Models/Doctor.php on line 19
+[15-Oct-2025 07:34:16 UTC] PHP Fatal error:  Cannot redeclare App\Http\Controllers\Frontend\FrontendController::listdoctorstore() in /home2/doctoraz/public_html/app/Http/Controllers/Frontend/FrontendController.php on line 613
+[23-Dec-2025 00:00:04 UTC] PHP Fatal error:  Cannot use App\Http\Controllers\Admin\DoctorController as DoctorController because the name is already in use in /home2/doctoraz/public_html/routes/web.php on line 46
+[23-Dec-2025 00:02:02 UTC] PHP Fatal error:  Cannot use App\Http\Controllers\Admin\DoctorController as DoctorController because the name is already in use in /home2/doctoraz/public_html/routes/web.php on line 46
+[23-Dec-2025 00:09:47 UTC] PHP Fatal error:  Cannot use App\Http\Controllers\Admin\DoctorController as DoctorController because the name is already in use in /home2/doctoraz/public_html/routes/web.php on line 46
+[23-Dec-2025 00:15:56 UTC] PHP Fatal error:  Cannot use App\Http\Controllers\Admin\DoctorController as DoctorController because the name is already in use in /home2/doctoraz/public_html/routes/web.php on line 46
