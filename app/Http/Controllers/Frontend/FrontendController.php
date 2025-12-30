@@ -43,7 +43,7 @@ class FrontendController extends Controller
     // ---------- Home / index ----------
     public function index(Request $request)
     {
-        Log::warning('function index: ' . now()->toDateTimeString() . ' - IP: ' . $request->ip() . ' - URL: ' . $request->fullUrl());
+     Log::debug('function index: ' . now()->toDateTimeString() );
         $authId = null;
         if ($request->has('auth_id')) {
             try {
@@ -73,7 +73,7 @@ class FrontendController extends Controller
     // ---------- General search / suggestions / helper endpoints ----------
     public function generalSearch()
     {
-        Log::warning('function generalSearch: ' . now()->toDateTimeString() . ' - IP: ' . $request->ip() . ' - URL: ' . $request->fullUrl());
+     Log::debug('function about: ' . now()->toDateTimeString() );
         return view('frontend.general_search', [
             'bannerImages' => BannerImage::all(),
             'countries'    => Country::orderBy('name')->get(),
@@ -85,7 +85,7 @@ class FrontendController extends Controller
 
     public function getClinicsByCity($city_name)
     {
-        Log::warning('function getClinicsByCity: ' . now()->toDateTimeString() . ' - IP: ' . $request->ip() . ' - URL: ' . $request->fullUrl());
+     Log::debug('function about: ' . now()->toDateTimeString() );
         $cat_clinic = Client::where('clinics.city_name', $city_name)
             ->join('category', 'category.id', '=', 'clinics.category_id')
             ->select('category.*')->get();
@@ -115,7 +115,7 @@ class FrontendController extends Controller
 
     public function getClinicsByState($state_name)
     {
-        Log::warning('function getClinicsByState: ' . now()->toDateTimeString() . ' - IP: ' . $request->ip() . ' - URL: ' . $request->fullUrl());
+     Log::debug('function about: ' . now()->toDateTimeString() );
         $cat_clinic = Client::where('clinics.state_name', $state_name)
             ->join('category', 'category.id', '=', 'clinics.category_id')
             ->select('category.*')->get();
@@ -145,7 +145,7 @@ class FrontendController extends Controller
 
     public function getTopCategories()
     {
-        Log::warning('function getTopCategories: ' . now()->toDateTimeString() . ' - IP: ' . $request->ip() . ' - URL: ' . $request->fullUrl());
+     Log::debug('function about: ' . now()->toDateTimeString() );
         $categories = Category::take(100)->get();
         $categoryIds = $categories->pluck('id')->toArray();
 
@@ -167,7 +167,7 @@ class FrontendController extends Controller
      */
 public function search(Request $request)
 {
-    Log::warning('function search: ' . now()->toDateTimeString() . ' - IP: ' . $request->ip() . ' - URL: ' . $request->fullUrl());
+     Log::debug('function about: ' . now()->toDateTimeString() );
     $q = trim($request->input('query', $request->input('q', '')));
     $filter = $request->input('filter_type');
 
@@ -322,7 +322,7 @@ public function search(Request $request)
 
     public function suggestions(Request $request)
     {
-        Log::warning('function suggestions: ' . now()->toDateTimeString() . ' - IP: ' . $request->ip() . ' - URL: ' . $request->fullUrl());
+     Log::debug('function about: ' . now()->toDateTimeString() );
         $q = trim($request->input('query', ''));
         $filter = $request->input('filter_type', null);
         $max = 10;
@@ -380,14 +380,14 @@ public function search(Request $request)
     // clinic details
     public function clinicDetails($id)
     {
-         Log::warning('function clinicDetails: ' . now()->toDateTimeString() . ' - IP: ' . $request->ip() . ' - URL: ' . $request->fullUrl());
+     Log::debug('function about: ' . now()->toDateTimeString() );
         return view('frontend.clinic-details', ['clinic' => Client::with('doctors')->findOrFail($id)]);
     }
 
     // category details
 public function categoryDetails($slug)
 {
-     Log::warning('function categoryDetails: ' . now()->toDateTimeString() . ' - IP: ' . $request->ip() . ' - URL: ' . $request->fullUrl());
+     Log::debug('function about: ' . now()->toDateTimeString() );
     $category = is_numeric($slug)
         ? Category::findOrFail((int) $slug)
         : Category::where('slug', $slug)->firstOrFail();
@@ -425,8 +425,7 @@ public function categoryDetails($slug)
 
 public function about()
 {
-     Log::warning('function about: ' . now()->toDateTimeString() . ' - IP: ' . $request->ip() . ' - URL: ' . $request->fullUrl());    
-    $about = AboutUs::latest()->first();
+     Log::debug('function about: ' . now()->toDateTimeString() );
 
     // ✅ Real-time counts directly from the database
     $doctorCount = DB::table('doctor_profiles')->count();   // total doctors
@@ -446,25 +445,25 @@ public function about()
 
     public function contact()
     {
-         Log::warning('function contact: ' . now()->toDateTimeString() . ' - IP: ' . $request->ip() . ' - URL: ' . $request->fullUrl());
+     Log::debug('function about: ' . now()->toDateTimeString() );
         return view('frontend.contact', ['contactus' => ContactUs::first()]);
     }
 
     public function terms()
     {
-         Log::warning('function terms: ' . now()->toDateTimeString() . ' - IP: ' . $request->ip() . ' - URL: ' . $request->fullUrl());
+     Log::debug('function about: ' . now()->toDateTimeString() );
         return view('frontend.terms');
     }
 
     public function privacy()
     {
-         Log::warning('function privacy: ' . now()->toDateTimeString() . ' - IP: ' . $request->ip() . ' - URL: ' . $request->fullUrl());
+     Log::debug('function about: ' . now()->toDateTimeString() );
         return view('frontend.privacy');
     }
 
     public function listclinic()
     {
-         Log::warning('function listclinic: ' . now()->toDateTimeString() . ' - IP: ' . $request->ip() . ' - URL: ' . $request->fullUrl());
+     Log::debug('function about: ' . now()->toDateTimeString() );
         return view('frontend.clinic-listing', [
             'cities' => City::all(),
             'district' => District::all(),
@@ -476,14 +475,13 @@ public function about()
 
     public function listclinicstore(Request $request)
     {
-         Log::warning('function listclinicstore: ' . now()->toDateTimeString() . ' - IP: ' . $request->ip() . ' - URL: ' . $request->fullUrl());
+         Log::info('function listclinicstore: ' . now()->toDateTimeString() . ' - IP: ' . $request->ip() . ' - URL: ' . $request->fullUrl());
         return back()->with('success', 'Clinic saved (placeholder).');
     }
-
     // show form page
     public function listdoctor()
     {
-        Log::warning('function listdoctor: ' . now()->toDateTimeString() . ' - IP: ' . $request->ip() . ' - URL: ' . $request->fullUrl());
+     Log::info('function about: ' . now()->toDateTimeString() );
         $clinics = Client::with(['country','state','district','city'])->orderBy('name')->get();
 
         return view('frontend.doctor-listing', [
