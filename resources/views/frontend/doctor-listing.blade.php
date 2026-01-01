@@ -133,7 +133,7 @@
           <label for="category_id" class="small-label">Category <span class="text-danger">*</span></label>
           <select name="category_id" id="category_id" class="form-select" required>
             <option value="">Select Category</option>
-            @foreach($category as $cat)
+             @foreach($categories as $cat)
               <option value="{{ $cat->id }}" @selected(old('category_id') == $cat->id)>{{ $cat->name }}</option>
             @endforeach
           </select>
@@ -507,7 +507,7 @@
     }
 
     // --- Pincode Lookup ---
-    const PINCODE_LOOKUP_URL_BASE = "{{ url('/pincode/lookup') }}";
+    const PINCODE_LOOKUP_URL_BASE = "{{ url('/api/pincode/lookup') }}";
     function isValidPin(p) { return /^\d{6}$/.test(String(p||'').trim()); }
     $('#pincode').on('input', function(){ this.value = this.value.replace(/\D/g,'').slice(0,6); });
 
@@ -530,33 +530,103 @@
     function showSuccess(msg){ $('#pincodeHelp').text(msg).css('color','green'); }
     function showError(msg){ $('#pincodeHelp').text(msg).css('color','crimson'); }
 
-    function lookupPincode(pincode) {
-      if (!isValidPin(pincode)) { showError('Invalid Pincode!'); return; }
 
-      $('#pincodeLookupBtn').prop('disabled', true).text('Looking...');
-      $.getJSON(PINCODE_LOOKUP_URL_BASE + '/' + encodeURIComponent(pincode))
-        .done(function(res){
-          if (!res || res.success !== true || !res.payload) { showError('Invalid Pincode'); return; }
-          const payload = res.payload;
+function lookupPincode(pincode) {
+     Log::debug('function lookupPincode: ' . now()->toDateTimeString() );
+  
+  if (!isValidPin(pincode)) {
+    showError('Invalid Pincode!');
+    return;
+  }
 
-          $('#pincode_id').val(payload.id ?? payload.pincode_id ?? '');
-          if (payload.country) setSelectByText($('#country_id'), payload.country);
-          if (payload.state) setSelectByText($('#state_id'), payload.state);
+  $('#pincodeLookupBtn').prop('disabled', true).text('Looking...');
 
-          const selectedStateVal = $('#state_id').val();
-          if (selectedStateVal) {
-            loadDistrictsForState(selectedStateVal, null, payload.district ?? null);
-            setTimeout(function(){
-              const districtId = $('#district_id').val();
-              if (districtId) loadAreasByDistrict(districtId, pincode);
-              lockLocation($('#country_id').val(), payload.country, selectedStateVal, payload.state, $('#district_id').val(), payload.district);
-            }, 800);
+  $.getJSON(PINCODE_LOOKUP_URL_BASE + '/' + encodeURIComponent(pincode))
+    .done(function(res) {
+      if (!res || !res.success || !res.payload) {
+        showError('Lookup failed');
+        return;
+      }
+
+      const p = res.payload;
+Log::debug(p.country_id,p.state_id,p.district_id,p.city_id);
+      // Save pincode id
+      $('#pincode_id').val(p.id || p.pincode_id || '');
+
+      /* -------------------
+         1️⃣ COUNTRY
+      ------------------- */
+      if (p.country_id) {
+        $('#country_id').val(p.country_id).trigger('change');
+      }
+
+      /* -------------------
+         2️⃣ STATE (after country filters states)
+      ------------------- */
+      setTimeout(() => {
+        if (p.state_id) {
+          $('#state_id').val(p.state_id).trigger('change');
+        }
+
+        /* -------------------
+           3️⃣ DISTRICT (after AJAX load)
+        ------------------- */
+        setTimeout(() => {
+          if (p.district_id) {
+            $('#district_id').val(p.district_id).trigger('change');
           }
-          showSuccess('Pincode looked up successfully.');
-        })
-        .fail(function(){ showError('Lookup failed.'); })
-        .always(function(){ $('#pincodeLookupBtn').prop('disabled', false).text('Lookup'); });
-    }
+
+          /* -------------------
+             4️⃣ AREA (after areas load)
+          ------------------- */
+          setTimeout(() => {
+            if (p.city_id) {
+              $('#city_id').val(p.city_id).trigger('change.select2');
+            }
+          }, 600);
+
+        }, 600);
+
+      }, 500);
+
+      showSuccess('Pincode looked up successfully.');
+    })
+    .fail(() => showError('Lookup failed'))
+    .always(() => {
+      $('#pincodeLookupBtn').prop('disabled', false).text('Lookup');
+    });
+}
+
+
+
+
+    // function lookupPincode(pincode) {
+    //   if (!isValidPin(pincode)) { showError('Invalid Pincode!'); return; }
+
+    //   $('#pincodeLookupBtn').prop('disabled', true).text('Looking...');
+    //   $.getJSON(PINCODE_LOOKUP_URL_BASE + '/' + encodeURIComponent(pincode))
+    //     .done(function(res){
+    //       if (!res || res.success !== true || !res.payload) { showError('Invalid Pincode'); return; }
+    //       const payload = res.payload;
+
+    //       $('#pincode_id').val(payload.id ?? payload.pincode_id ?? '');
+    //       if (payload.country) setSelectByText($('#country_id'), payload.country);
+    //       if (payload.state) setSelectByText($('#state_id'), payload.state);
+
+    //       const selectedStateVal = $('#state_id').val();
+    //       if (selectedStateVal) {
+    //         loadDistrictsForState(selectedStateVal, null, payload.district ?? null);
+    //         setTimeout(function(){
+    //           const districtId = $('#district_id').val();
+    //           if (districtId) loadAreasByDistrict(districtId, pincode);
+    //           lockLocation($('#country_id').val(), payload.country, selectedStateVal, payload.state, $('#district_id').val(), payload.district);
+    //         }, 800);
+    //       }
+    //       showSuccess('Pincode looked up successfully.');
+    //     })
+    //     .fail(function(){ showError('Lookup failed.'); })
+    //     .always(function(){ $('#pincodeLookupBtn').prop('disabled', false).text('Lookup'); });
+    // }
 
     $('#pincodeLookupBtn').on('click', function(){ lookupPincode($('#pincode').val().trim()); });
     $('#pincode').on('blur', function(){ const val = $(this).val().trim(); if (isValidPin(val)) lookupPincode(val); });
@@ -667,6 +737,8 @@
           if (resp && resp.success) {
             // redirect to the correct named route in web.php
             let dest = '{{ route("listdoctor.success") }}';
+            // console.log('Redirecting to:', dest);
+            
             if (resp.id) dest += '?id=' + encodeURIComponent(resp.id);
             window.location.href = dest;
           } else {

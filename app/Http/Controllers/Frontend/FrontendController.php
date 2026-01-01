@@ -478,28 +478,82 @@ public function about()
          Log::info('function listclinicstore: ' . now()->toDateTimeString() . ' - IP: ' . $request->ip() . ' - URL: ' . $request->fullUrl());
         return back()->with('success', 'Clinic saved (placeholder).');
     }
-    // show form page
-    public function listdoctor()
-    {
-     Log::info('function about: ' . now()->toDateTimeString() );
-        $clinics = Client::with(['country','state','district','city'])->orderBy('name')->get();
 
-        return view('frontend.doctor-listing', [
-            'countries' => Country::orderBy('name')->get(),
-            'state'     => State::orderBy('name')->get(),
-            'district'  => District::orderBy('name')->get(),
-            'city'      => City::orderBy('name')->get(),
-            'pincodes'  => Pincode::orderBy('pincode')->get(),
-            'clinics'   => $clinics,
-            'hospitals' => Hospital::with(['country','state','district','city'])->orderBy('name')->get(),
-            'medicas'   => Medicashop::with(['country','state','district','city'])->orderBy('name')->get(),
-            'category'  => Category::orderBy('name')->get(),
-            'clinicsJson' => $clinics->map(fn($c)=>[
-                'id'=>$c->id,'name'=>$c->name,'country_id'=>$c->country_id,'state_id'=>$c->state_id,
-                'district_id'=>$c->district_id,'city_id'=>$c->city_id
-            ])->values()->toJson()
-        ]);
-    }
+
+    public function listdoctor()
+{
+    Log::info('listdoctor loaded at ' . now());
+
+    // 🔹 Cache static data (1 hour)
+    $countries = cache()->remember('countries_list', 3600, function () {
+        return Country::select('id','name')->orderBy('name')->get();
+    });
+
+    $categories = cache()->remember('categories_list', 3600, function () {
+        return Category::select('id','name')->orderBy('name')->get();
+    });
+
+    // 🔹 Clinics (LIMITED + OPTIMIZED)
+    $clinics = Client::select(
+            'id','name','country_id','state_id','district_id','city_id'
+        )
+        ->with([
+            'country:id,name',
+            'state:id,name',
+            'district:id,name',
+            'city:id,name'
+        ])
+        ->orderBy('name')
+        ->limit(200) // 🔥 VERY IMPORTANT
+        ->get();
+
+    return view('frontend.doctor-listing', [
+        'countries'  => $countries,
+        'categories' => $categories,
+        'clinics'    => $clinics,
+
+        // ❌ DO NOT LOAD THESE ON FIRST PAGE
+        'state'      => collect(),
+        'district'   => collect(),
+        'city'       => collect(),
+        'pincodes'   => collect(),
+        'hospitals'  => collect(),
+        'medicas'    => collect(),
+
+        // 🔹 JSON ONLY FOR REQUIRED FIELDS
+        'clinicsJson' => $clinics->map(fn($c) => [
+            'id'          => $c->id,
+            'name'        => $c->name,
+            'country_id'  => $c->country_id,
+            'state_id'    => $c->state_id,
+            'district_id' => $c->district_id,
+            'city_id'     => $c->city_id,
+        ])->toJson()
+    ]);
+}
+
+    // show form page
+    // public function listdoctor()
+    // {
+    //  Log::info('function about: ' . now()->toDateTimeString() );
+    //     $clinics = Client::with(['country','state','district','city'])->orderBy('name')->get();
+
+    //     return view('frontend.doctor-listing', [
+    //         'countries' => Country::orderBy('name')->get(),
+    //         'state'     => State::orderBy('name')->get(),
+    //         'district'  => District::orderBy('name')->get(),
+    //         'city'      => City::orderBy('name')->get(),
+    //         'pincodes'  => Pincode::orderBy('pincode')->get(),
+    //         'clinics'   => $clinics,
+    //         'hospitals' => Hospital::with(['country','state','district','city'])->orderBy('name')->get(),
+    //         'medicas'   => Medicashop::with(['country','state','district','city'])->orderBy('name')->get(),
+    //         'categories'  => Category::orderBy('name')->get(),
+    //         'clinicsJson' => $clinics->map(fn($c)=>[
+    //             'id'=>$c->id,'name'=>$c->name,'country_id'=>$c->country_id,'state_id'=>$c->state_id,
+    //             'district_id'=>$c->district_id,'city_id'=>$c->city_id
+    //         ])->values()->toJson()
+    //     ]);
+    // }
 
     /**
      * Create doctor profile.

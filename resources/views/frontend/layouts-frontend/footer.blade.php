@@ -70,6 +70,7 @@
 
                 {{-- CTA Button --}}
                 <a href="{{ route('listdoctor') }}" class="btn btn-primary btn-lg w-100 mb-3">
+                    
                     List A Doctor <i class="fa-solid fa-arrow-right ms-2"></i>
                 </a>
 

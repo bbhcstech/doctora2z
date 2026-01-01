@@ -621,10 +621,34 @@ public function edit(Request $request, $id = null): View
             ->where('pincode', $pin)
             ->first();
 
-        if ($local) {
-            $payload = method_exists($local, 'toPayloadArray') ? $local->toPayloadArray() : $local->toArray();
-            return response()->json(['success' => true, 'source' => 'local', 'payload' => $payload], 200);
-        }
+            if ($local) {
+    $payload = [
+        'id' => $local->id,
+        'pincode' => $local->pincode,
+
+        'country' => optional($local->country)->name,
+        'state' => optional($local->state)->name,
+        'district' => optional($local->district)->name,
+        'city' => optional($local->city)->name,
+
+        'country_id' => $local->country_id,
+        'state_id' => $local->state_id,
+        'district_id' => $local->district_id,
+        'city_id' => $local->city_id,
+    ];
+
+    return response()->json([
+        'success' => true,
+        'source' => 'local',
+        'payload' => $payload
+    ]);
+}
+
+
+        // if ($local) {
+        //     $payload = method_exists($local, 'toPayloadArray') ? $local->toPayloadArray() : $local->toArray();
+        //     return response()->json(['success' => true, 'source' => 'local', 'payload' => $payload], 200);
+        // }
 
         // cache
         $cacheKey = 'pincode_api_' . $pin;

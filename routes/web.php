@@ -6,6 +6,7 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ContactUsController;
 
 use App\Http\Controllers\CountryController;
+use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\StateController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\DistrictController;
@@ -232,9 +233,15 @@ Route::middleware(['auth'])->prefix('doctor/profile')->name('doctor.profile.')->
         ->name('ajax.clinics')->whereNumber('categoryId');
 
     // Pincode lookup (auth-only version)
-    Route::get('pincode/{pincode}/lookup', [DoctorProfileController::class, 'pincodeLookup'])
-        ->name('ajax.pincode')
-        ->where('pincode', '[0-9]{6}');
+    // Route::get('/pincode/lookup/{pincode}', [DoctorProfileController::class, 'pincodeLookup'])
+    // ->name('pincode.lookup')
+    // ->where('pincode', '[0-9]{6}');
+
+    // Route::get('/api/pincode/lookup/{pincode}', [DoctorProfileController::class, 'pincodeLookup'])
+    // ->where('pincode', '[0-9]{6}')
+    // ->middleware('throttle:30,1')
+    // ->name('api.pincode.lookup');
+
 
     /* ===== Clinic schedule CRUD (AJAX) ===== */
     Route::get('{doctor}/schedules', [DoctorProfileController::class, 'clinicSchedulesIndex'])
@@ -252,10 +259,18 @@ Route::middleware(['auth'])->prefix('doctor/profile')->name('doctor.profile.')->
 }); // end auth group
 
 // Public pincode lookup (throttled)
-Route::get('/pincode/{pincode}/lookup', [DoctorProfileController::class, 'pincodeLookup'])
+
+Route::get('/api/pincode/lookup/{pincode}', [DoctorProfileController::class, 'pincodeLookup'])
     ->where('pincode', '[0-9]{6}')
     ->middleware('throttle:30,1')
-    ->name('pincode.lookup');
+    ->name('api.pincode.lookup.public');
+
+
+// Route::get('/pincode/{pincode}/lookup', [DoctorProfileController::class, 'pincodeLookup'])
+//     ->where('pincode', '[0-9]{6}')
+//     ->middleware('throttle:30,1')
+//     ->name('pincode.lookup');
+
 Route::get('/get-areas/{districtId}/{pincode?}', [FrontendController::class, 'getAreas']);
 // // Doctor profile password routes
 Route::middleware(['auth'])->group(function () {
@@ -679,7 +694,7 @@ Route::get('/get-clinics-by-state/{state_name}', [FrontendController::class, 'ge
 Route::get('/get-top-categories', [FrontendController::class, 'getTopCategories'])->name('getTopCategories');
 
 Route::get('/get-districts/{state_id}', [FrontendController::class, 'getDistricts'])->name('getDistricts');
-Route::get('/pincode/lookup/{pincode}', [FrontendController::class, 'lookupPincode'])->name('pincode.lookup');
+// Route::get('/pincode/lookup/{pincode}', [FrontendController::class, 'lookupPincode'])->name('pincode.lookup');
 
 Route::post('/send-email', [FrontendController::class, 'sendEmail'])->name('send.email');
 
