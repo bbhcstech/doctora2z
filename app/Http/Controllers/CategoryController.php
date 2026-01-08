@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Models\Category;
 
 class CategoryController extends Controller
@@ -102,7 +103,7 @@ if ($request->hasFile('image')) {
     $request->file('image')->move($folderPath, $imageName);
 
     // Log the image name for debugging purposes
-    \Log::info("New image uploaded: {$imageName}");
+    Log::info("New image uploaded: {$imageName}");
 } else {
     // If no new image, retain the old image name
     $imageName = $category->image;
@@ -116,7 +117,7 @@ $category->update([
 ]);
 
 // Log the category update for debugging
-\Log::info("Category updated with image: {$imageName}");
+Log::info("Category updated with image: {$imageName}");
 
 
         return redirect()->route('category.index')->with('success', 'Category updated successfully.');

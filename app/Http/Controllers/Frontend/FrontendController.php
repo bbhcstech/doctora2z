@@ -143,6 +143,35 @@ class FrontendController extends Controller
         ]);
     }
 
+
+
+//     public function getTopCategories()
+// {
+//     $categories = Category::take(100)->get();
+//     $categoryIds = $categories->pluck('id');
+
+//     // $totalDoctors = Doctor::where('status', 'active') // 🔥 IMPORTANT
+//     //     ->whereIn('category_id', $categoryIds)
+//     //     ->select('category_id', DB::raw('COUNT(*) as doctor_count'))
+//     //     ->groupBy('category_id')
+//     //     ->pluck('doctor_count', 'category_id');
+
+//     $totalDoctors = Doctor::where('status', 'active')
+//     ->select('category_id', DB::raw('COUNT(*) as doctor_count'))
+//     ->whereIn('category_id', $categoryIds)
+//     ->groupBy('category_id')
+//     ->pluck('doctor_count', 'category_id');
+
+
+//     return response()->json([
+//         'cat_doc' => $categories->map(function ($c) use ($totalDoctors) {
+//             $c->doctor_count = $totalDoctors[$c->id] ?? 0;
+//             return $c;
+//         })
+//     ]);
+// }
+
+
     public function getTopCategories()
     {
      Log::debug('function about: ' . now()->toDateTimeString() );
@@ -480,11 +509,12 @@ public function about()
     }
 
 
-    public function listdoctor()
+
+
+public function listdoctor()
 {
     Log::info('listdoctor loaded at ' . now());
 
-    // 🔹 Cache static data (1 hour)
     $countries = cache()->remember('countries_list', 3600, function () {
         return Country::select('id','name')->orderBy('name')->get();
     });
@@ -493,44 +523,77 @@ public function about()
         return Category::select('id','name')->orderBy('name')->get();
     });
 
-    // 🔹 Clinics (LIMITED + OPTIMIZED)
-    $clinics = Client::select(
-            'id','name','country_id','state_id','district_id','city_id'
-        )
-        ->with([
-            'country:id,name',
-            'state:id,name',
-            'district:id,name',
-            'city:id,name'
-        ])
-        ->orderBy('name')
-        ->limit(200) // 🔥 VERY IMPORTANT
-        ->get();
+    // ✅ FIXED: Use actual database column names
+    $states = State::select('id', 'name', 'country_id')  // 'id' and 'name' (not 'id_state' and 'state')
+        // Remove ->where('is_active', 1) কারণ column নেই
+        ->orderBy('name')  // Order by 'name' column
+        ->get()
+        ->map(function($state) {
+            // Add compatibility fields for your existing blade
+            $state->id_state = $state->id;
+            $state->state = $state->name;
+            return $state;
+        });
 
     return view('frontend.doctor-listing', [
         'countries'  => $countries,
         'categories' => $categories,
-        'clinics'    => $clinics,
-
-        // ❌ DO NOT LOAD THESE ON FIRST PAGE
-        'state'      => collect(),
+        'state'      => $states,   // ✅ Now compatible
         'district'   => collect(),
         'city'       => collect(),
-        'pincodes'   => collect(),
-        'hospitals'  => collect(),
-        'medicas'    => collect(),
-
-        // 🔹 JSON ONLY FOR REQUIRED FIELDS
-        'clinicsJson' => $clinics->map(fn($c) => [
-            'id'          => $c->id,
-            'name'        => $c->name,
-            'country_id'  => $c->country_id,
-            'state_id'    => $c->state_id,
-            'district_id' => $c->district_id,
-            'city_id'     => $c->city_id,
-        ])->toJson()
     ]);
 }
+//     public function listdoctor()
+// {
+//     Log::info('listdoctor loaded at ' . now());
+
+//     // 🔹 Cache static data (1 hour)
+//     $countries = cache()->remember('countries_list', 3600, function () {
+//         return Country::select('id','name')->orderBy('name')->get();
+//     });
+
+//     $categories = cache()->remember('categories_list', 3600, function () {
+//         return Category::select('id','name')->orderBy('name')->get();
+//     });
+
+//     // 🔹 Clinics (LIMITED + OPTIMIZED)
+//     $clinics = Client::select(
+//             'id','name','country_id','state_id','district_id','city_id'
+//         )
+//         ->with([
+//             'country:id,name',
+//             'state:id,name',
+//             'district:id,name',
+//             'city:id,name'
+//         ])
+//         ->orderBy('name')
+//         ->limit(200) // 🔥 VERY IMPORTANT
+//         ->get();
+
+//     return view('frontend.doctor-listing', [
+//         'countries'  => $countries,
+//         'categories' => $categories,
+//         'clinics'    => $clinics,
+
+//         // ❌ DO NOT LOAD THESE ON FIRST PAGE
+//         'state'      => collect(),
+//         'district'   => collect(),
+//         'city'       => collect(),
+//         'pincodes'   => collect(),
+//         'hospitals'  => collect(),
+//         'medicas'    => collect(),
+
+//         // 🔹 JSON ONLY FOR REQUIRED FIELDS
+//         'clinicsJson' => $clinics->map(fn($c) => [
+//             'id'          => $c->id,
+//             'name'        => $c->name,
+//             'country_id'  => $c->country_id,
+//             'state_id'    => $c->state_id,
+//             'district_id' => $c->district_id,
+//             'city_id'     => $c->city_id,
+//         ])->toJson()
+//     ]);
+// }
 
     // show form page
     // public function listdoctor()

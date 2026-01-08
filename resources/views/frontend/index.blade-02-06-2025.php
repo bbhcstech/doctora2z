@@ -14,20 +14,20 @@
                             @foreach($bannerImages as $banner)
                                  <div class="owl-carousel-item position-relative">
                                         <!-- Desktop Image -->
-                                        <img class="img-fluid d-none d-md-block" 
-                                             src="{{ asset('admin/uploads/banners/' . $banner->image) }}" 
-                                             alt="{{ $banner->name }}" 
+                                        <img class="img-fluid d-none d-md-block"
+                                             src="{{ asset('admin/uploads/banners/' . $banner->image) }}"
+                                             alt="{{ $banner->name }}"
                                              style="object-fit: contain; background-size: cover;  height: auto; min-height: 30vh; max-height: 40vh; border-radius: 30px; width: 100%;">
-                                        
+
                                         <!-- Mobile Image -->
-                                        <img class="img-fluid d-block d-md-none" 
-                                             src="{{ asset('admin/uploads/banners/' . $banner->mobile_image) }}" 
-                                             alt="{{ $banner->name }}" 
+                                        <img class="img-fluid d-block d-md-none"
+                                             src="{{ asset('admin/uploads/banners/' . $banner->mobile_image) }}"
+                                             alt="{{ $banner->name }}"
                                              style="object-fit: cover; height: 25vh; border-radius: 30px; width: 100%;">
                                     </div>
                             @endforeach
                         </div>
-            
+
                         <!-- Search Section -->
                         <div class="search-overlay" style="position: absolute; top: 10%; left: 50%; transform: translate(-50%, -10%); z-index: 10; width: 60%; border-radius: 10px; padding: 20px; margin-top: 50px;">
                                     <div class="d-flex flex-column flex-md-row align-items-center" id="responsive-container">
@@ -41,16 +41,16 @@
                                                 </p>
                                             </div>
 
-                                
+
                                         <!-- Search Form -->
                                         <form id="search-form" method="GET" action="{{ route('search') }}" class="d-flex flex-grow-1" style="  margin-left: 5px;">
                                             <div class="input-group w-100" style="border: 1px solid #000;">
                                                 <!-- Search Input -->
-                                                <input 
-                                                    type="text" 
-                                                    id="search-input" 
-                                                    name="query" 
-                                                    class="form-control" 
+                                                <input
+                                                    type="text"
+                                                    id="search-input"
+                                                    name="query"
+                                                    class="form-control"
                                                     placeholder="Type or speak to search from Doctora2z..."
                                                     style="border:none;"
                                                 />
@@ -65,7 +65,7 @@
                                             </div>
                                         </form>
                                     </div>
-                                
+
                                     <!-- Suggestions List (Initially Hidden) -->
                                     <ul id="suggestions-list" class="list-group mt-2" style="display: none; position: absolute; z-index: 9999; width: 45%;"></ul>
                                 </div>
@@ -73,11 +73,11 @@
                         </div>
                     </div>
                 </div>
-            
+
             <!-- Carousel End -->
-            
-            
-            
+
+
+
                <!-- Category Start -->
             <div id="category-section" class="search-results mt-0 animated-section" style="display:block; margin-left: 20px; margin-right: 20px; ">
                 <div class="container-xxl py-2">
@@ -96,7 +96,7 @@
                             <!-- Categories will be dynamically added here -->
                         </div>
                         <div class="text-end mt-2">
-                            <button id="browse-less-btn" 
+                            <button id="browse-less-btn"
                                     style="all: unset; font-size: 14px; font-weight: 500; color: #007bff; cursor: pointer; display: none;">
                                 Browse Less ←
                             </button>
@@ -104,24 +104,24 @@
                     </div>
                 </div>
             </div>
-            
+
             <!--CLINIC SPECIALISATION Section-->
-            
+
             <div id="categoryClinic-section" class="search-results mt-4 animated-section" style="display:none; margin-left: 20px; margin-right: 20px;">
                 <div class="container-xxl py-2">
                     <div class="container">
                         <div class="d-flex align-items-center justify-content-between">
-                             Heading 
+                             Heading
                             <h1 class="mb-5 wow fadeInUp" data-wow-delay="0.1s" style="font-size: 20px; font-weight: 600; color: #333;">
                                 CLINIC SPECIALISATION
                             </h1>
-                             Browse More Link 
+                             Browse More Link
                             <button id="clinic-more-btn" style="all: unset; font-size: 14px; font-weight: 500; color: #007bff; cursor: pointer;">
                                 Browse More →
                             </button>
                         </div>
                         <div class="row row-cols-10 g-3 cat-list" id="cat-list">
-                             Categories will be dynamically added here 
+                             Categories will be dynamically added here
                         </div>
                         <button id="clinic-less-btn" style="all: unset; font-size: 14px; font-weight: 500; color: #007bff; cursor: pointer; display: none;">
                             Browse less ←
@@ -143,9 +143,9 @@
                                 Browse More →
                             </button>
                         </div>
-                        <div 
+                        <div
                             class="row g-0 hospital-list"
-                            id="hospital-list" 
+                            id="hospital-list"
                             style="gap: 0; ">
                         </div>
                         <button id="less-btn" style="all: unset; font-size: 14px; font-weight: 500; color: #007bff; cursor: pointer; display: none;">
@@ -154,11 +154,11 @@
                     </div>
                 </div>
             </div>
-            
-            
-            
+
+
+
             <!--MEDICARE SHOP SECTION-->
-            
+
             <div id="medica-section" class="search-results mt-4 animated-section" style="display:none; margin-left: 20px; margin-right: 20px;">
                 <div class="container-xxl py-2">
                     <div class="container">
@@ -172,9 +172,9 @@
                                 Browse More →
                             </button>
                         </div>
-                        <div 
-                            class="row g-0 medica-list" 
-                            id="medica-list" 
+                        <div
+                            class="row g-0 medica-list"
+                            id="medica-list"
                             style="gap: 0; ">
                         </div>
                         <button id="medica-less-btn" style="all: unset; font-size: 14px; font-weight: 500; color: #007bff; cursor: pointer; display: none;">
@@ -183,8 +183,8 @@
                     </div>
                 </div>
             </div>
-            
-            
+
+
            <div id="about-section" class="search-results mt-4 animated-section" style="display:block; margin-left: 20px; margin-right: 20px;">
     <div class="container-xxl py-2">
         <div class="container">
@@ -229,13 +229,13 @@
                                 </div>
                             </div>
                         </div>
-    
-                        
+
+
                         <div class="col-md-6">
                             <div class="d-flex">
                                 <div class="d-flex py-2 why_point">
                                     <div class="flex-shrink-0">
-                                        <img src="https://cdn.apollohospitals.com/apollohospitals-live/wca/04-Pharmacies-2.svg" 
+                                        <img src="https://cdn.apollohospitals.com/apollohospitals-live/wca/04-Pharmacies-2.svg"
                                              alt="" class="point_icon"
                                              style="margin-bottom: 10px; border-radius: 10px; padding: 10px; background-color: #fff;">
                                     </div>
@@ -248,12 +248,12 @@
                                 </div>
                             </div>
                         </div>
-                    
+
                         <div class="col-md-6">
                             <div class="d-flex">
                                 <div class="d-flex py-2 why_point">
                                     <div class="flex-shrink-0">
-                                        <img src="https://cdn.apollohospitals.com/apollohospitals-live/wca/06-Doctors-2.svg" 
+                                        <img src="https://cdn.apollohospitals.com/apollohospitals-live/wca/06-Doctors-2.svg"
                                              alt="" class="point_icon"
                                              style="margin-bottom: 10px; border-radius: 10px; padding: 10px; background-color: #fff;">
                                     </div>
@@ -267,16 +267,16 @@
                             </div>
                         </div>
 
-                       
-    
-    
+
+
+
                     </div>
                 </div>
                 <div class="col-md-5">
                     <!--   <h5 class="pb-3 text-center">Apollo Awards</h5> -->
                     <div class="card border-0 who-card" style="margin-top: 52px;">
-                         <img src="{{ asset('/admin/uploads/about/' . $aboutus[0]->page_image) }}" class="card-img " alt="..."> 
-                           
+                         <img src="{{ asset('/admin/uploads/about/' . $aboutus[0]->page_image) }}" class="card-img " alt="...">
+
                     </div>
                 </div>
             </div>
@@ -284,8 +284,8 @@
         </div>
         </div>
         </div>
-               
-            
+
+
             <!--testimonial section-->
             <div id="testimonial-section" class="search-results mt-4 animated-section" style="display:block;">
                 <div class="container-xxl py-2">
@@ -297,7 +297,7 @@
                             </h1>
                              </div>
                             <div class="owl-carousel testimonial-carousel">
-                                 @foreach ($pages as $page) 
+                                 @foreach ($pages as $page)
                                 <div class="testimonial-item bg-light rounded p-4" >
                                     <i class="fa fa-quote-left fa-2x text-primary mb-3"></i>
                                     <p style="height:60px;" >{{ $page->desc}}</p>
@@ -312,16 +312,16 @@
                                     </div>
                                 </div>
                                  @endforeach
-                                 
+
                                 </div>
                             </div>
                         </div>
                     </div>
-            
+
             <!--testimonial section-->
-            
-            
-                 
+
+
+
                  <!-- Contact Start -->
             <div id="contact" class="search-results mt-4 animated-section" style="display:block; margin-left: 20px; margin-right: 20px; margin-bottom: 20px;">
                 <div class="container-xxl py-2">
@@ -332,12 +332,12 @@
                                 {{$contactus-> title}}
                             </h1>
                         </div>
-                    
+
                             <div class="row g-4">
                                 <div class="col-12">
                                     <div class="row gy-4">
                                         <div class="col-md-4 wow fadeIn" data-wow-delay="0.1s">
-                                            
+
                                             <div class=" align-items-center bg-light rounded p-4">
                                                 <h5 class="mb-3 text-dark">Our Location</h5>
                                                 <div class="bg-white border rounded  flex-shrink-0 align-items-center justify-content-center me-3" style="width: 45px; height: 45px; float:left;">
@@ -381,12 +381,12 @@
                                         src="{{$contactus-> map_url}}"
                                         frameborder="0" style="min-height: 300px; border:0;" allowfullscreen="" aria-hidden="false"
                                         tabindex="0"></iframe>
-                                    
-                                    
+
+
                                 </div>
                                 <div class="col-md-6">
                                     <div class="wow fadeInUp" data-wow-delay="0.5s">
-                                        
+
                                         <!--<p class="mb-4">The contact form is currently inactive. Get a functional and working contact form with Ajax & PHP in a few minutes. Just copy and paste the files, add a little code and you're done. <a href="https://htmlcodex.com/contact-form">Download Now</a>.</p>-->
                                       <form action="{{ route('send.email') }}" method="POST">
                                         @csrf
@@ -394,46 +394,46 @@
                                             <div class="col-md-6">
                                                 <div class="form-floating">
                                                     <input type="text" name="name" class="form-control" id="name" placeholder="Your Name" required
-                                                    oninvalid="this.setCustomValidity('Please enter your name')" 
+                                                    oninvalid="this.setCustomValidity('Please enter your name')"
                                                            oninput="this.setCustomValidity('')">
                                                     <label for="name">Your Name</label>
                                                 </div>
-                                                
-            
+
+
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-floating">
                                                     <input type="email" name="email" class="form-control" id="email" placeholder="Your Email" required
-                                                   oninvalid="this.setCustomValidity('Please enter a valid email address')" 
+                                                   oninvalid="this.setCustomValidity('Please enter a valid email address')"
                                                        oninput="this.setCustomValidity('')">
                                                 <label for="email">Your Email</label>
                                                 </div>
-                                               
+
                                             </div>
                                             <div class="col-12">
                                                 <div class="form-floating">
                                                     <input type="text" name="subject" class="form-control" id="subject" placeholder="Subject" required
-                                                    oninvalid="this.setCustomValidity('Please enter a subject')" 
+                                                    oninvalid="this.setCustomValidity('Please enter a subject')"
                                                        oninput="this.setCustomValidity('')">
                                                 <label for="subject">Subject</label>
                                                 </div>
-                                               
+
                                             </div>
                                             <div class="col-12">
                                                 <div class="form-floating">
                                                     <textarea name="message" class="form-control" placeholder="Leave a message here" id="message" style="height: 150px" required
-                                                    oninvalid="this.setCustomValidity('Please enter your message')" 
+                                                    oninvalid="this.setCustomValidity('Please enter your message')"
                                                       oninput="this.setCustomValidity('')"></textarea>
                                             <label for="message">Message</label>
                                                 </div>
-                                               
+
                                             </div>
                                             <div class="col-12">
                                                 <button class="btn btn-primary w-100 py-3" type="submit">Send Message</button>
                                             </div>
                                         </div>
                                     </form>
-            
+
                                     </div>
                                 </div>
                             </div>
@@ -441,7 +441,7 @@
                     </div>
                   </div>
                 <!-- Contact us end-->
-                
+
             <div class="floating-modal">
                 <div class="modal-body">
                     <a href="{{ route('listdoctor') }}" class="btn btn-primary rounded-0 px-lg-5 responsive-btn" style="border-radius: 10px !important;">
@@ -453,13 +453,13 @@
 
 
         @endsection
-        
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>      
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
  $(document).ready(function () {
     const maxVisibleDoctorItems = 12; // Limit to one row for doctor section
-    let maxVisibleClinicItems = 6; 
-let maxVisibleHospitalItems = 6; 
+    let maxVisibleClinicItems = 6;
+let maxVisibleHospitalItems = 6;
 let maxVisibleMedicaItems = 6;
 
 // Function to update maxVisibleItems based on screen width
@@ -467,17 +467,17 @@ function updateMaxVisibleItems() {
     const screenWidth = window.innerWidth;
 
     if (screenWidth <= 576) { // Mobile devices (small screens)
-       
+
         maxVisibleClinicItems = 2;
         maxVisibleHospitalItems = 2;
         maxVisibleMedicaItems = 2;
     } else if (screenWidth <= 768) { // Tablets (medium screens)
-        
+
         maxVisibleClinicItems = 4;
         maxVisibleHospitalItems = 4;
         maxVisibleMedicaItems = 4;
     } else { // Desktops (large screens)
-      
+
         maxVisibleClinicItems = 6;
         maxVisibleHospitalItems = 6;
         maxVisibleMedicaItems = 6;
@@ -558,7 +558,7 @@ function fetchCityAndState(lat, lon) {
             fetchDataByCity(city, state);
         })
         .catch(error => console.error("Error fetching location details:", error));
-        loadTopCategories(); 
+        loadTopCategories();
 }
 
 function fetchDataByCity(city, state) {
@@ -604,10 +604,10 @@ function displayData(categoryData, state_name, city_name) {
         doctorItem.style.display = index < 12 ? "block" : "none"; // Show first 10 items
 
         doctorItem.innerHTML = `
-            <a href="https://doctora2z.com/public/categoryDetails/${catdoc.id}" 
+            <a href="https://doctora2z.com/public/categoryDetails/${catdoc.id}"
                 style="text-decoration: none; display: flex; flex-direction: column; align-items: center; text-align: center;">
-                <img src="https://doctora2z.com/public/admin/uploads/category/${catdoc.image}" 
-                    alt="${catdoc.name}" 
+                <img src="https://doctora2z.com/public/admin/uploads/category/${catdoc.image}"
+                    alt="${catdoc.name}"
                     style="margin-bottom: 10px; border: 1px solid #939994f7; border-radius: 10px; background-color: #fff; height:120px; width:160px;">
                 <h6 style="font-weight: bold; font-size: 12px; color: #333; margin: 0;">${catdoc.name}</h6>
                 <p style="font-size: 12px; color: #666; margin: 0;">${catdoc.doctor_count} Doctors</p>
@@ -640,7 +640,7 @@ function displayData(categoryData, state_name, city_name) {
         $(this).hide();
         $("#browse-more-btn").show();
     });
-    
+
      $("#more-btn").click(function () {
         $(".hospital-item").show();
         $(this).hide();
@@ -654,7 +654,7 @@ function displayData(categoryData, state_name, city_name) {
         $(this).hide();
         $("#more-btn").show();
     });
-    
+
     $("#medica-more-btn").click(function () {
         $(".medica-item").show();
         $(this).hide();
@@ -684,7 +684,7 @@ function displayData(categoryData, state_name, city_name) {
     });
 });
 
-        
+
 
     jQuery(document).ready(function($) {
     const voiceSearchButton = $('#voice-search-btn');
@@ -725,7 +725,7 @@ function displayData(categoryData, state_name, city_name) {
             console.error('An error occurred while initializing voice recognition:', error);
         }
     });
-    
+
     const placeholders = [
         "Search from Doctora2z for clinic near me....",
         "Search for doctor from Doctora2z near me....",
@@ -740,13 +740,13 @@ function displayData(categoryData, state_name, city_name) {
 
     // Change placeholder every 2 seconds
     setInterval(changePlaceholder, 2000);
-    
+
         function toggleModal() {
         const modal = document.querySelector('.floating-modal');
         modal.classList.toggle('hidden');
     }
 });
-    
+
 
 
 </script>
@@ -776,18 +776,18 @@ function displayData(categoryData, state_name, city_name) {
 }
 
 
-</style>       
-        
-        
+</style>
+
+
         <style>
-        
+
     /* If additional gaps persist, remove unnecessary padding or margins */
     .container.mb-0 {
-        padding-top: 0 !important; 
+        padding-top: 0 !important;
         margin-top: 0 !important;
     }
 
-    
+
    /* Container for Doctor and Clinic Categories */
 /* Light greenish background */
 #category-section {

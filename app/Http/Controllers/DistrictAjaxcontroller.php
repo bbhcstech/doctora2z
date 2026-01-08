@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\City;
@@ -7,26 +6,26 @@ use App\Models\Country;
 use App\Models\District;
 use App\Models\Pincode;
 use App\Models\State;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
-use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
-use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
 
 class DistrictAjaxController extends Controller
 {
     public function index()
     {
-        $countries = Country::orderBy('name')->get(['id','name']);
-        $states    = State::orderBy('name')->get(['id','name','country_id']);
-        $districts = District::with(['state:id,name,country_id','state.country:id,name'])
+        $countries = Country::orderBy('name')->get(['id', 'name']);
+        $states    = State::orderBy('name')->get(['id', 'name', 'country_id']);
+        $districts = District::with(['state:id,name,country_id', 'state.country:id,name'])
             ->orderByDesc('id')
-            ->get(['id','name','state_id']);
+            ->get(['id', 'name', 'state_id']);
 
-        return view('admin.district.inline', compact('countries','districts','states'));
+        return view('admin.district.inline', compact('countries', 'districts', 'states'));
     }
 
     /**
@@ -36,7 +35,7 @@ class DistrictAjaxController extends Controller
     public function import(Request $request)
     {
         $request->validate([
-            'excel_file' => ['required','file','mimes:xls,xlsx,csv'],
+            'excel_file' => ['required', 'file', 'mimes:xls,xlsx,csv'],
         ], [
             'excel_file.required' => 'Please upload an Excel/CSV file.',
             'excel_file.mimes'    => 'Allowed file types: xls, xlsx, csv.',
@@ -47,40 +46,40 @@ class DistrictAjaxController extends Controller
 
             // read sheets -> first sheet
             $sheets = \Maatwebsite\Excel\Facades\Excel::toArray([], $file);
-            $rows = is_array($sheets) && count($sheets) ? $sheets[0] : [];
+            $rows   = is_array($sheets) && count($sheets) ? $sheets[0] : [];
 
-            $rows = array_map(function($r) {
-                return is_array($r) ? $r : (is_object($r) && method_exists($r,'toArray') ? $r->toArray() : (array)$r);
+            $rows = array_map(function ($r) {
+                return is_array($r) ? $r : (is_object($r) && method_exists($r, 'toArray') ? $r->toArray() : (array) $r);
             }, $rows);
 
             if (empty($rows)) {
                 return response()->json(['success' => false, 'message' => 'File parsed but contains no rows.'], 422);
             }
 
-            $map = $this->detectHeaderMap($rows[0]);
+            $map        = $this->detectHeaderMap($rows[0]);
             $startIndex = (isset($map['is_heading']) && $map['is_heading'] === true) ? 1 : 0;
 
             $created = 0;
-            $errors = [];
+            $errors  = [];
 
             for ($i = $startIndex; $i < count($rows); $i++) {
                 $r = $rows[$i];
 
-                $country = $this->cell($r, $map['country'] ?? 0);
-                $state   = $this->cell($r, $map['state'] ?? 1);
-                $district= $this->cell($r, $map['district'] ?? 2);
-                $city    = $this->cell($r, 3) ?? $this->cell($r, 'city') ?? null;
-                $pincode = $this->cell($r, 4) ?? $this->cell($r, 'pincode') ?? null;
+                $country  = $this->cell($r, $map['country'] ?? 0);
+                $state    = $this->cell($r, $map['state'] ?? 1);
+                $district = $this->cell($r, $map['district'] ?? 2);
+                $city     = $this->cell($r, 3) ?? $this->cell($r, 'city') ?? null;
+                $pincode  = $this->cell($r, 4) ?? $this->cell($r, 'pincode') ?? null;
 
                 if (! $district || ! $city || ! $pincode) {
                     $errors[] = ['row' => $i + 1, 'reason' => 'Missing district, city or pincode'];
                     continue;
                 }
 
-                $district = $this->normalizeName((string)$district);
-                $city     = $this->normalizeName((string)$city);
-                $state    = $this->normalizeName((string)$state);
-                $country  = $this->normalizeName((string)$country);
+                $district = $this->normalizeName((string) $district);
+                $city     = $this->normalizeName((string) $city);
+                $state    = $this->normalizeName((string) $state);
+                $country  = $this->normalizeName((string) $country);
 
                 $countryModel = Country::where('name', $country)->first();
                 if (! $countryModel && $country) {
@@ -111,18 +110,18 @@ class DistrictAjaxController extends Controller
 
                 // Prepare payload
                 $payload = [
-                    'pincode'    => (string)$pincode,
-                    'city_id'    => $cityModel->id,
-                    'district_id'=> $districtModel->id,
-                    'state_id'   => $stateModel->id,
-                    'country_id' => $countryModel?->id ?? $stateModel->country_id ?? null,
+                    'pincode'     => (string) $pincode,
+                    'city_id'     => $cityModel->id,
+                    'district_id' => $districtModel->id,
+                    'state_id'    => $stateModel->id,
+                    'country_id'  => $countryModel?->id ?? $stateModel->country_id ?? null,
                 ];
 
                 // Attempt to set raw_json if present in row (column 5 or 'raw_json')
                 $rawVal = $this->cell($r, 5) ?? $this->cell($r, 'raw_json') ?? null;
                 if ($rawVal !== null) {
                     if (is_string($rawVal)) {
-                        $decoded = json_decode($rawVal, true);
+                        $decoded             = json_decode($rawVal, true);
                         $payload['raw_json'] = json_last_error() === JSON_ERROR_NONE ? $decoded : $rawVal;
                     } else {
                         $payload['raw_json'] = $rawVal;
@@ -131,7 +130,7 @@ class DistrictAjaxController extends Controller
 
                 // Because DB enforces unique(pincode), we must update existing pincode rows
                 try {
-                    $existing = Pincode::where('pincode', (string)$pincode)->first();
+                    $existing = Pincode::where('pincode', (string) $pincode)->first();
                     if ($existing) {
                         // update existing row to reflect the imported mapping
                         $existing->update($payload);
@@ -144,8 +143,8 @@ class DistrictAjaxController extends Controller
                 } catch (\Illuminate\Database\QueryException $qe) {
                     // Fallback: if duplicate key error raced in, fetch existing and update
                     // errorInfo[1] == 1062 is duplicate entry (MySQL)
-                    if (isset($qe->errorInfo[1]) && (int)$qe->errorInfo[1] === 1062) {
-                        $existing = Pincode::where('pincode', (string)$pincode)->first();
+                    if (isset($qe->errorInfo[1]) && (int) $qe->errorInfo[1] === 1062) {
+                        $existing = Pincode::where('pincode', (string) $pincode)->first();
                         if ($existing) {
                             $existing->update($payload);
                         } else {
@@ -160,13 +159,13 @@ class DistrictAjaxController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => "Import finished. Created: {$created}. Rows with issues: ".count($errors),
-                'errors'  => $errors,
+                'message' => "Import finished. Created: {$created}. Rows with issues: " . count($errors),
+                'errors' => $errors,
             ]);
-        } catch (\Maatwebsite\Excel\Validators\Failure $ex) {
-            return response()->json(['success'=>false,'message'=>'Import validation failed','errors'=>$ex->failures()], 422);
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $ex) {
+            return response()->json(['success' => false, 'message' => 'Import validation failed', 'errors' => $ex->failures()], 422);
         } catch (\Throwable $e) {
-            \Log::error('District import failed', ['exception' => $e]);
+            Log::error('District import failed', ['exception' => $e]);
             return response()->json(['success' => false, 'message' => 'Failed to import file. See server logs for details.'], 500);
         }
     }
@@ -177,10 +176,14 @@ class DistrictAjaxController extends Controller
     public function exportExcel(Request $request)
     {
         [$rows, $headings] = $this->getExportRows($request);
-        $export = new class($rows, $headings) implements FromCollection, WithHeadings {
-            public function __construct(public $rows, public $headings) {}
-            public function collection() { return $this->rows; }
-            public function headings(): array { return $this->headings; }
+        $export            = new class($rows, $headings) implements FromCollection, WithHeadings
+        {
+            public function __construct(public $rows, public $headings)
+            {}
+            public function collection()
+            {return $this->rows;}
+            public function headings(): array
+            {return $this->headings;}
         };
         return Excel::download($export, 'districts.xlsx');
     }
@@ -188,10 +191,14 @@ class DistrictAjaxController extends Controller
     public function exportCsv(Request $request)
     {
         [$rows, $headings] = $this->getExportRows($request);
-        $export = new class($rows, $headings) implements FromCollection, WithHeadings {
-            public function __construct(public $rows, public $headings) {}
-            public function collection() { return $this->rows; }
-            public function headings(): array { return $this->headings; }
+        $export            = new class($rows, $headings) implements FromCollection, WithHeadings
+        {
+            public function __construct(public $rows, public $headings)
+            {}
+            public function collection()
+            {return $this->rows;}
+            public function headings(): array
+            {return $this->headings;}
         };
         return Excel::download($export, 'districts.csv', \Maatwebsite\Excel\Excel::CSV);
     }
@@ -226,17 +233,17 @@ class DistrictAjaxController extends Controller
 
         if ($search !== '') {
             $like = "%{$search}%";
-            $q->where(function($qq) use ($like) {
+            $q->where(function ($qq) use ($like) {
                 $qq->where('d.name', 'like', $like)
-                   ->orWhere('s.name', 'like', $like)
-                   ->orWhere('c.name', 'like', $like);
+                    ->orWhere('s.name', 'like', $like)
+                    ->orWhere('c.name', 'like', $like);
             });
         }
 
         $rows = collect($q->orderBy('c.name')->orderBy('s.name')->orderBy('d.name')->get())
             ->map(fn($r) => (array) $r);
 
-        $headings = ['ID','District','State','Country'];
+        $headings = ['ID', 'District', 'State', 'Country'];
 
         return [$rows, $headings];
     }
@@ -250,14 +257,14 @@ class DistrictAjaxController extends Controller
         $id = $request->input('id');
 
         $validated = $request->validate([
-            'id'       => ['nullable','integer','exists:districts,id'],
+            'id'       => ['nullable', 'integer', 'exists:districts,id'],
             'name'     => [
-                'required','string','max:255',
-                Rule::unique('districts','name')
+                'required', 'string', 'max:255',
+                Rule::unique('districts', 'name')
                     ->where(fn($q) => $q->where('state_id', $request->input('state_id')))
                     ->ignore($id),
             ],
-            'state_id' => ['required','integer','exists:states,id'],
+            'state_id' => ['required', 'integer', 'exists:states,id'],
         ], [
             'name.required'     => 'District name is required.',
             'name.unique'       => 'This district already exists in the selected state.',
@@ -276,10 +283,10 @@ class DistrictAjaxController extends Controller
                 'success'  => true,
                 'message'  => $id ? 'District updated successfully.' : 'District created successfully.',
                 'district' => [
-                    'id'        => $district->id,
-                    'name'      => $district->name,
-                    'state_id'  => $district->state_id,
-                    'state'     => [
+                    'id'       => $district->id,
+                    'name'     => $district->name,
+                    'state_id' => $district->state_id,
+                    'state'    => [
                         'id'      => $district->state->id,
                         'name'    => $district->state->name,
                         'country' => [
@@ -336,11 +343,13 @@ class DistrictAjaxController extends Controller
     {
         $countryId = $request->integer('country_id') ?? $request->route('country_id');
         try {
-            if (!$countryId) return response()->json(['success' => true, 'data' => []]);
+            if (! $countryId) {
+                return response()->json(['success' => true, 'data' => []]);
+            }
 
             $states = State::where('country_id', $countryId)
                 ->orderBy('name')
-                ->get(['id','name']);
+                ->get(['id', 'name']);
 
             return response()->json(['success' => true, 'data' => $states]);
         } catch (\Throwable $e) {
@@ -353,7 +362,7 @@ class DistrictAjaxController extends Controller
     public function getAllStates()
     {
         try {
-            $states = State::orderBy('name')->get(['id','name','country_id']);
+            $states = State::orderBy('name')->get(['id', 'name', 'country_id']);
             return response()->json(['success' => true, 'data' => $states]);
         } catch (\Throwable $e) {
             Log::error('Get all states failed', ['exception' => $e]);
@@ -365,11 +374,13 @@ class DistrictAjaxController extends Controller
     {
         $stateId = $request->integer('state_id') ?? $request->route('state_id');
         try {
-            if (!$stateId) return response()->json(['success' => true, 'data' => []]);
+            if (! $stateId) {
+                return response()->json(['success' => true, 'data' => []]);
+            }
 
             $items = District::where('state_id', $stateId)
                 ->orderBy('name')
-                ->get(['id','name']);
+                ->get(['id', 'name']);
 
             return response()->json(['success' => true, 'data' => $items]);
         } catch (\Throwable $e) {
@@ -382,11 +393,13 @@ class DistrictAjaxController extends Controller
     {
         $districtId = $request->integer('district_id') ?? $request->route('district_id');
         try {
-            if (!$districtId) return response()->json(['success' => true, 'data' => []]);
+            if (! $districtId) {
+                return response()->json(['success' => true, 'data' => []]);
+            }
 
             $items = City::where('district_id', $districtId)
                 ->orderBy('name')
-                ->get(['id','name']);
+                ->get(['id', 'name']);
 
             return response()->json(['success' => true, 'data' => $items]);
         } catch (\Throwable $e) {
@@ -417,9 +430,9 @@ class DistrictAjaxController extends Controller
             // attach city name for convenience
             $city = City::find($cityId);
             $data = $items->map(fn($p) => [
-                'id' => $p->id,
-                'pincode' => $p->pincode,
-                'city_id' => $p->city_id,
+                'id'        => $p->id,
+                'pincode'   => $p->pincode,
+                'city_id'   => $p->city_id,
                 'city_name' => $city?->name ?? null,
             ]);
 
@@ -457,9 +470,9 @@ class DistrictAjaxController extends Controller
             $cities = City::whereIn('id', $items->pluck('city_id')->unique())->pluck('name', 'id')->toArray();
 
             $data = $items->map(fn($p) => [
-                'id' => $p->id,
-                'pincode' => $p->pincode,
-                'city_id' => $p->city_id,
+                'id'        => $p->id,
+                'pincode'   => $p->pincode,
+                'city_id'   => $p->city_id,
                 'city_name' => $cities[$p->city_id] ?? null,
             ]);
 
@@ -492,13 +505,13 @@ class DistrictAjaxController extends Controller
             }
 
             $data = [
-                'id'         => $pin->id,
-                'pincode'    => $pin->pincode,
-                'country'    => $pin->country?->only('id','name') ?? null,
-                'state'      => $pin->state?->only('id','name') ?? null,
-                'district'   => $pin->district?->only('id','name') ?? null,
-                'city'       => $pin->city?->only('id','name') ?? null,
-                'raw'        => $pin->raw_json,
+                'id'       => $pin->id,
+                'pincode'  => $pin->pincode,
+                'country'  => $pin->country?->only('id', 'name') ?? null,
+                'state'    => $pin->state?->only('id', 'name') ?? null,
+                'district' => $pin->district?->only('id', 'name') ?? null,
+                'city'     => $pin->city?->only('id', 'name') ?? null,
+                'raw'      => $pin->raw_json,
             ];
 
             return response()->json(['success' => true, 'data' => $data]);
@@ -518,10 +531,10 @@ class DistrictAjaxController extends Controller
         $id = $request->input('id');
 
         $validated = $request->validate([
-            'id'        => ['nullable','integer','exists:pincodes,id'],
-            'pincode'   => ['required','string','max:20', Rule::unique('pincodes','pincode')->ignore($id)],
-            'city_id'   => ['required','integer','exists:cities,id'],
-            'raw_json'  => ['nullable'],
+            'id'       => ['nullable', 'integer', 'exists:pincodes,id'],
+            'pincode'  => ['required', 'string', 'max:20', Rule::unique('pincodes', 'pincode')->ignore($id)],
+            'city_id'  => ['required', 'integer', 'exists:cities,id'],
+            'raw_json' => ['nullable'],
         ], [
             'pincode.required' => 'Pincode is required.',
             'pincode.unique'   => 'This pincode already exists.',
@@ -530,7 +543,7 @@ class DistrictAjaxController extends Controller
 
         try {
             // get city to derive country/state/district
-            $city = City::with(['district','district.state','district.state.country'])->find($validated['city_id']);
+            $city    = City::with(['district', 'district.state', 'district.state.country'])->find($validated['city_id']);
             $payload = [
                 'pincode' => $validated['pincode'],
                 'city_id' => $validated['city_id'],
@@ -539,14 +552,14 @@ class DistrictAjaxController extends Controller
             // if city exists, fill fk columns to avoid DB NOT NULL errors
             if ($city) {
                 $payload['district_id'] = $city->district_id ?? null;
-                $payload['state_id']   = $city->district->state_id ?? ($city->district->state->id ?? null ?? null);
-                $payload['country_id'] = $city->district->state->country_id ?? ($city->district->state->country->id ?? null ?? null);
+                $payload['state_id']    = $city->district->state_id ?? ($city->district->state->id ?? null ?? null);
+                $payload['country_id']  = $city->district->state->country_id ?? ($city->district->state->country->id ?? null ?? null);
             }
 
             if (isset($validated['raw_json'])) {
                 $raw = $validated['raw_json'];
                 if (is_string($raw)) {
-                    $decoded = json_decode($raw, true);
+                    $decoded             = json_decode($raw, true);
                     $payload['raw_json'] = json_last_error() === JSON_ERROR_NONE ? $decoded : $raw;
                 } else {
                     $payload['raw_json'] = $raw;
@@ -559,7 +572,7 @@ class DistrictAjaxController extends Controller
                 $payload
             );
 
-            $pincode->load('country','state','district','city');
+            $pincode->load('country', 'state', 'district', 'city');
 
             return response()->json([
                 'success' => true,
@@ -592,7 +605,7 @@ class DistrictAjaxController extends Controller
      */
     public function downloadPincodeSample()
     {
-        $headers = ['Content-Type' => 'text/csv'];
+        $headers  = ['Content-Type' => 'text/csv'];
         $callback = function () {
             $out = fopen('php://output', 'w');
             // columns: country, state, district, city, pincode
@@ -609,7 +622,7 @@ class DistrictAjaxController extends Controller
 
     private function normalizeName(?string $s): string
     {
-        $s = preg_replace('/\s+/u', ' ', trim((string)$s));
+        $s = preg_replace('/\s+/u', ' ', trim((string) $s));
         return ucwords(mb_strtolower($s));
     }
 
@@ -627,14 +640,14 @@ class DistrictAjaxController extends Controller
         $map = ['is_heading' => false, 'country' => 0, 'state' => 1, 'district' => 2];
 
         // associative keys
-        $keys = array_map(fn($k)=>mb_strtolower(trim((string)$k)), array_keys($asArray));
-        if (in_array('country',$keys,true) && in_array('state',$keys,true) && in_array('district',$keys,true)) {
-            return ['is_heading'=>true,'country'=>'country','state'=>'state','district'=>'district'];
+        $keys = array_map(fn($k) => mb_strtolower(trim((string) $k)), array_keys($asArray));
+        if (in_array('country', $keys, true) && in_array('state', $keys, true) && in_array('district', $keys, true)) {
+            return ['is_heading' => true, 'country' => 'country', 'state' => 'state', 'district' => 'district'];
         }
 
         // values as header row
-        $vals = array_map(fn($v)=>mb_strtolower(trim((string)$v)), array_values($asArray));
-        if (in_array('country',$vals,true) && in_array('state',$vals,true) && in_array('district',$vals,true)) {
+        $vals = array_map(fn($v) => mb_strtolower(trim((string) $v)), array_values($asArray));
+        if (in_array('country', $vals, true) && in_array('state', $vals, true) && in_array('district', $vals, true)) {
             $map['is_heading'] = true;
         }
         return $map;
@@ -642,10 +655,22 @@ class DistrictAjaxController extends Controller
 
     private function cell($row, $key)
     {
-        if (is_array($row))               return $row[$key] ?? null;
-        if ($row instanceof \ArrayAccess) return $row[$key] ?? null;
-        if (is_object($row) && method_exists($row,'get')) return $row->get($key, null);
-        if (is_int($key))                 return $row[$key] ?? null;
+        if (is_array($row)) {
+            return $row[$key] ?? null;
+        }
+
+        if ($row instanceof \ArrayAccess) {
+            return $row[$key] ?? null;
+        }
+
+        if (is_object($row) && method_exists($row, 'get')) {
+            return $row->get($key, null);
+        }
+
+        if (is_int($key)) {
+            return $row[$key] ?? null;
+        }
+
         return null;
     }
 
@@ -659,12 +684,12 @@ class DistrictAjaxController extends Controller
         $request->merge(['city' => $this->normalizeName($request->input('city'))]);
 
         $validated = $request->validate([
-            'country_id' => ['required','integer','exists:countries,id'],
-            'state_id'   => ['required','integer','exists:states,id'],
-            'district_id'=> ['required','integer','exists:districts,id'],
-            'city'       => ['required','string','max:255'],
-            'pincode'    => ['required','string','max:20'],
-            'raw_json'   => ['nullable'],
+            'country_id'  => ['required', 'integer', 'exists:countries,id'],
+            'state_id'    => ['required', 'integer', 'exists:states,id'],
+            'district_id' => ['required', 'integer', 'exists:districts,id'],
+            'city'        => ['required', 'string', 'max:255'],
+            'pincode'     => ['required', 'string', 'max:20'],
+            'raw_json'    => ['nullable'],
         ], [
             'country_id.required'  => 'Country is required.',
             'state_id.required'    => 'State is required.',
@@ -683,17 +708,17 @@ class DistrictAjaxController extends Controller
 
             // Build payload including required FK columns to avoid DB errors
             $payload = [
-                'pincode'    => $validated['pincode'],
-                'city_id'    => $city->id,
-                'district_id'=> $validated['district_id'],
-                'state_id'   => $validated['state_id'],
-                'country_id' => $validated['country_id'],
+                'pincode'     => $validated['pincode'],
+                'city_id'     => $city->id,
+                'district_id' => $validated['district_id'],
+                'state_id'    => $validated['state_id'],
+                'country_id'  => $validated['country_id'],
             ];
 
             if (isset($validated['raw_json'])) {
                 $raw = $validated['raw_json'];
                 if (is_string($raw)) {
-                    $decoded = json_decode($raw, true);
+                    $decoded             = json_decode($raw, true);
                     $payload['raw_json'] = json_last_error() === JSON_ERROR_NONE ? $decoded : $raw;
                 } else {
                     $payload['raw_json'] = $raw;
@@ -709,7 +734,7 @@ class DistrictAjaxController extends Controller
             DB::commit();
 
             // eager load relations used elsewhere
-            $pincode->load('country','state','district','city');
+            $pincode->load('country', 'state', 'district', 'city');
 
             return response()->json([
                 'success' => true,
@@ -728,14 +753,14 @@ class DistrictAjaxController extends Controller
     public function listAllPincodes()
     {
         $rows = Pincode::with([
-                'country:id,name',
-                'state:id,name',
-                'district:id,name',
-                'city:id,name',
-            ])
+            'country:id,name',
+            'state:id,name',
+            'district:id,name',
+            'city:id,name',
+        ])
             ->orderByDesc('id')
-            ->get(['id','pincode','country_id','state_id','district_id','city_id','created_at','updated_at'])
-            ->map(function($p){
+            ->get(['id', 'pincode', 'country_id', 'state_id', 'district_id', 'city_id', 'created_at', 'updated_at'])
+            ->map(function ($p) {
                 return [
                     'id'            => $p->id,
                     'pincode'       => $p->pincode,
@@ -757,6 +782,6 @@ class DistrictAjaxController extends Controller
                 ];
             });
 
-        return response()->json(['success'=>true,'data'=>$rows]);
+        return response()->json(['success' => true, 'data' => $rows]);
     }
 }

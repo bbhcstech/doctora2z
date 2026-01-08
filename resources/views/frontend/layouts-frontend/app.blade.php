@@ -1,41 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-    {{-- Dynamic Title --}}
-    <title>@yield('meta_title', 'Doctor A2Z - Your Health, Our Priority')</title>
+    <head>
+        <meta charset="utf-8">
+        <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-    {{-- Dynamic Meta Description --}}
-    <meta name="description" content="@yield('meta_description', 'Connecting patients with trusted healthcare professionals. Find the right doctor for your needs.')">
+        {{-- Dynamic Title --}}
+        <title>@yield('meta_title', 'Doctor A2Z - Your Health, Our Priority')</title>
 
-    {{-- Dynamic Keywords --}}
-    <meta name="keywords" content="@yield('meta_keywords', 'doctors, healthcare, medical, clinic, hospital, find doctor, book appointment, doctor near me')">
+        {{-- Dynamic Meta Description --}}
+        <meta name="description" content="@yield('meta_description', 'Connecting patients with trusted healthcare professionals. Find the right doctor for your needs.')">
 
-    {{-- Canonical URL --}}
-    <link rel="canonical" href="@yield('canonical', url()->current())">
+        {{-- Dynamic Keywords --}}
+        <meta name="keywords" content="@yield('meta_keywords', 'doctors, healthcare, medical, clinic, hospital, find doctor, book appointment, doctor near me')">
 
-    {{-- Google Site Verification --}}
-    <meta name="google-site-verification" content="ZIPbz_f1RBeMz1F4SQwzuEeWfeMzKAWjUyH0BV9i_oU" />
+        {{-- Canonical URL --}}
+        <link rel="canonical" href="@yield('canonical', url()->current())">
 
-    {{-- Open Graph --}}
-    <meta property="og:title" content="@yield('meta_title', 'Doctor A2Z - Your Health, Our Priority')">
-    <meta property="og:description" content="@yield('meta_description', 'Connecting patients with trusted healthcare professionals. Find the right doctor for your needs.')">
-    <meta property="og:image" content="@yield('meta_image', asset('admin/assets/img/doctor-logo.png'))">
-    <meta property="og:url" content="@yield('canonical', url()->current())">
-    <meta property="og:type" content="website">
-    <meta property="og:site_name" content="Doctor A2Z">
+        {{-- Google Site Verification --}}
+        <meta name="google-site-verification" content="ZIPbz_f1RBeMz1F4SQwzuEeWfeMzKAWjUyH0BV9i_oU" />
 
-    {{-- Twitter --}}
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="@yield('meta_title', 'Doctor A2Z - Your Health, Our Priority')">
-    <meta name="twitter:description" content="@yield('meta_description', 'Connecting patients with trusted healthcare professionals. Find the right doctor for your needs.')">
-    <meta name="twitter:image" content="@yield('meta_image', asset('admin/assets/img/doctor-logo.png'))">
+        {{-- Open Graph --}}
+        <meta property="og:title" content="@yield('meta_title', 'Doctor A2Z - Your Health, Our Priority')">
+        <meta property="og:description" content="@yield('meta_description', 'Connecting patients with trusted healthcare professionals. Find the right doctor for your needs.')">
+        <meta property="og:image" content="@yield('meta_image', asset('admin/assets/img/doctor-logo.png'))">
+        <meta property="og:url" content="@yield('canonical', url()->current())">
+        <meta property="og:type" content="website">
+        <meta property="og:site_name" content="Doctor A2Z">
 
-    {{-- Schema JSON-LD --}}
-{{-- Schema JSON-LD --}}
-<script type="application/ld+json">
+        {{-- Twitter --}}
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="@yield('meta_title', 'Doctor A2Z - Your Health, Our Priority')">
+        <meta name="twitter:description" content="@yield('meta_description', 'Connecting patients with trusted healthcare professionals. Find the right doctor for your needs.')">
+        <meta name="twitter:image" content="@yield('meta_image', asset('admin/assets/img/doctor-logo.png'))">
+
+        {{-- Schema JSON-LD --}}
+        {{-- Schema JSON-LD --}}
+        <script type="application/ld+json">
 @yield('schema', json_encode([
     '@context' => 'https://schema.org',
     '@type' => 'MedicalOrganization',
@@ -63,52 +64,53 @@
 ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE))
 </script>
 
-    {{-- Robots Meta --}}
-    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+        {{-- Robots Meta --}}
+        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
 
-    {{-- Favicon --}}
-    <link rel="icon" type="image/x-icon" href="{{ asset('admin/assets/img/doctor-logo.png') }}">
+        {{-- Favicon --}}
+        <link rel="icon" type="image/x-icon" href="{{ asset('admin/assets/img/doctor-logo.png') }}">
 
-    {{-- CSS --}}
-    @stack('head')
+        {{-- CSS --}}
+        @stack('head')
 
-    {{-- Additional Head Content --}}
-    @yield('head')
-</head>
+        {{-- Additional Head Content --}}
+        @yield('head')
+    </head>
 
-<body>
-    {{-- HEADER --}}
-    @include('frontend.layouts-frontend.header')
+    <body>
+        {{-- HEADER --}}
+        @include('frontend.layouts-frontend.header')
 
-    {{-- MAIN CONTENT --}}
-    <main>
-        {{-- Dynamic H1 for SEO --}}
-        @hasSection('page_h1')
-            <div class="container py-4">
-                <h1 class="page-heading text-center">@yield('page_h1')</h1>
-            </div>
-        @endif
+        {{-- MAIN CONTENT --}}
+        <main>
+            {{-- Dynamic H1 for SEO --}}
+            @hasSection('page_h1')
+                <div class="container py-4">
+                    <h1 class="page-heading text-center">@yield('page_h1')</h1>
+                </div>
+            @endif
 
-        {{-- Breadcrumb --}}
-        @hasSection('breadcrumb')
-            <nav aria-label="breadcrumb" class="container py-2">
-                <ol class="breadcrumb">
-                    @yield('breadcrumb')
-                </ol>
-            </nav>
-        @endif
+            {{-- Breadcrumb --}}
+            @hasSection('breadcrumb')
+                <nav aria-label="breadcrumb" class="container py-2">
+                    <ol class="breadcrumb">
+                        @yield('breadcrumb')
+                    </ol>
+                </nav>
+            @endif
 
-        {{-- Main Content --}}
-        @yield('content')
-    </main>
+            {{-- Main Content --}}
+            @yield('content')
+        </main>
 
-    {{-- FOOTER --}}
-    @include('frontend.layouts-frontend.footer')
+        {{-- FOOTER --}}
+        @include('frontend.layouts-frontend.footer')
 
-    {{-- Scripts --}}
-    @stack('scripts')
+        {{-- Scripts --}}
+        @stack('scripts')
 
-    {{-- Additional Body Content --}}
-    @yield('body_end')
-</body>
+        {{-- Additional Body Content --}}
+        @yield('body_end')
+    </body>
+
 </html>

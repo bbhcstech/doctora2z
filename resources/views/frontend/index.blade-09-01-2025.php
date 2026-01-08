@@ -202,7 +202,7 @@
                                         <div class="row g-0">
                                             <div class="col">
                                                 <div class="card-body">
-                                                    <a href="doctor_view.php?id={{ $clinic->id }}" 
+                                                    <a href="doctor_view.php?id={{ $clinic->id }}"
                                                        style="text-decoration:none;color:#BA4A00;">
                                                         <h6 class="card-title">
                                                             <i class="fa-solid fa-user-doctor"></i> {{ $clinic->name }}
@@ -220,7 +220,7 @@
                                                     </p>
                                                     <p class="card-text" style="font-size:14px;margin-top:-17px;">
                                                         <small class="text-body-secondary">
-                                                            <i class="fa-solid fa-calendar-days" style="color:#884EA0;"></i>  
+                                                            <i class="fa-solid fa-calendar-days" style="color:#884EA0;"></i>
                                                             Last Update:{{ \Carbon\Carbon::parse($clinic->updated_at)->format('d-m-Y H:i:s') }}
                                                         </small>
                                                     </p>
@@ -229,8 +229,8 @@
                                                             <i class="fa fa-phone-alt me-2"></i> Call Clinic
                                                         </a>
                                                     </div>
-                                                    <a href="{{ route('clinic.details', ['id' => $clinic->id]) }}" 
-                                                       class="btn btn-primary p-2 mx-1 small rounded mt-1" 
+                                                    <a href="{{ route('clinic.details', ['id' => $clinic->id]) }}"
+                                                       class="btn btn-primary p-2 mx-1 small rounded mt-1"
                                                        style="background:#04778E; color:white; width:100%;">
                                                        View More
                                                     </a>
@@ -277,10 +277,10 @@
                                         $currentTime = now()->setTimezone('Asia/Kolkata')->format('H:i');
                                         $currentMonth = now()->format('F'); // Current month name
                                         $currentDay = now()->format('l');  // Current day name
-                                    
+
                                         $months = json_decode($doctor->month ?? '[]', true) ?? []; // Ensure this is an array
                                         $days = json_decode($doctor->day ?? '[]', true) ?? [];    // Ensure this is an array
-                                    
+
                                         $isLive = (
                                             ($doctor->date_picker == $currentDate && $doctor->time_slot && collect(explode(', ', $doctor->time_slot))->contains(function($slot) use ($currentTime) {
                                                 [$start, $end] = explode(' - ', $slot);
@@ -319,7 +319,7 @@
                             <a class="btn btn-success" href="{{ route('doctor.details', $doctor->id) }}">Doctor Details</a>
                         </div>
                     </div>
-                   
+
 
                     {{-- Show Advertisement After Every 5 Doctors --}}
                     @if (($index + 1) % 5 == 0 && isset($advertisements) && $advertisements->count() > 0)
@@ -333,11 +333,11 @@
                                         <div class="text-start ps-4">
                                             <h5 class="mb-3">{{ $advertisement->title }}</h5>
                                             <p class="mb-2">{{ $advertisement->desc }}</p>
-                                           
+
                                         </div>
                                     </div>
                                     <div class="col-sm-12 col-md-4 d-flex flex-column align-items-start align-items-md-end justify-content-center">
-                                        
+
                                         <small class="text-truncate"><i class="far fa-calendar-alt text-primary me-2"></i>Published: {{ $advertisement->created_at->format('d M, Y') }}</small>
                                     </div>
                                 </div>
@@ -348,14 +348,14 @@
                 @endforeach
             </div>
         </div>
-        
+
     @elseif(isset($doctors))
         <p class="text-center">No doctors found for the selected filters.</p>
     @endif
 </div>
-            
+
  <!--Doctor section end-->
- 
+
    <!-- Category Start -->
 <div id="category-section" class="search-results mt-4" style="display:none;">
     <div class="container-xxl py-2">
@@ -363,9 +363,9 @@
             <h1 class="text-center mb-5 wow fadeInUp" data-wow-delay="0.1s">Popular Doctor Categories</h1>
             <div class="row g-4" id="category-list">
                 @foreach ($category as $index => $cat)
-                <div 
-                    class="col-lg-3 col-sm-6 fadeInUp category-item  justify-content-center align-items-center" 
-                    data-wow-delay="0.1s" 
+                <div
+                    class="col-lg-3 col-sm-6 fadeInUp category-item  justify-content-center align-items-center"
+                    data-wow-delay="0.1s"
                     style="{{ $index >= 12 ? 'display: none;' : '' }}">
                     <a class="cat-item rounded p-4 d-flex flex-column align-items-center text-center" href="{{ route('category.details',  $cat->id) }}" style="width: 100%; height: 250px; border: 1px solid #ddd; border-radius: 10px;">
                         <img src="{{ asset('/admin/uploads/category/' . $cat->image) }}" height="100px" width="100px" style="border: 3px solid #588DDB; border-radius: 15px;" class="mt-3">
@@ -395,13 +395,13 @@
                             <div class="col-10 text-start">
                                 <img class="img-fluid w-100" src="{{ asset('/admin/uploads/about/' . $aboutus->page_image) }}">
                             </div>
-                            
+
                         </div>
                     </div>
                     <div class="col-lg-6 wow fadeIn" data-wow-delay="0.5s">
                         <h1 class="mb-4">{{$aboutus->title}}</h1>
                         <p class="mb-4">{{$aboutus->description}}</p>
-                        
+
                         <a class="btn btn-primary py-3 px-5 mt-3" href="{{$aboutus->button_url}}">{{$aboutus->button_text}}</a>
                     </div>
                 </div>
@@ -417,8 +417,8 @@
             <div class="container">
                 <h1 class="text-center mb-5">Our Patients Say!!!</h1>
                 <div class="owl-carousel testimonial-carousel">
-                     @foreach ($pages as $page) 
-                    
+                     @foreach ($pages as $page)
+
                     <div class="testimonial-item bg-light rounded p-4">
                         <i class="fa fa-quote-left fa-2x text-primary mb-3"></i>
                         <p>{{ $page->desc}}</p>
@@ -430,7 +430,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     @endforeach
                     <!--<div class="testimonial-item bg-light rounded p-4">-->
                     <!--    <i class="fa fa-quote-left fa-2x text-primary mb-3"></i>-->
@@ -469,23 +469,23 @@
             </div>
         </div>
         <!-- Testimonial End -->
-        
+
 
         @endsection
-        
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>      
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function () {
     // Handle filter button click
-   
+
      $('.filter-btn').on('click', function () {
         const filterType = $(this).data('filter');
         console.log(filterType);
-        
+
         $('#filter_type').val(filterType); // Set filter type in hidden input
         $('#search-section select').val(''); // Clear select values
-        
-        
+
+
 
         // Show the relevant result section based on filter type
         if (filterType === 'clinic') {
@@ -504,7 +504,7 @@
             $('#search-section').hide();
             $('#category-section').show();
             $('#doctors-section').hide();
-            $('#clinics-section').hide();  
+            $('#clinics-section').hide();
         }
     });
 
@@ -580,9 +580,9 @@
             $('#city_id').empty().append('<option value="">Select City</option>');
         }
     });
-    
-    
-    
+
+
+
     // // Handle category filtering dynamically (optional, if categories depend on location)
     //     $('#city_id').on('change', function() {
     //         const cityId = $(this).val();
@@ -608,30 +608,30 @@
     //         }
     //     });
 
-    
-    
-    
+
+
+
     const browseMoreBtn = $("#browse-more-btn");
     const browseLessBtn = $("#browse-less-btn");
     const categoryItems = $(".category-item");
     const maxVisibleRows = 3;
     const itemsPerRow = 4; // Assuming 4 items per row
     const maxVisibleItems = maxVisibleRows * itemsPerRow;
-    
+
     // Initially, display only the first few items
     categoryItems.each(function (index) {
         if (index >= maxVisibleItems) {
             $(this).hide();
         }
     });
-    
+
     // Handle "Browse More Categories" button click
     browseMoreBtn.on("click", function () {
         categoryItems.show(); // Show all items
         browseMoreBtn.hide(); // Hide the "Browse More" button
         browseLessBtn.show(); // Show the "Browse Less" button
     });
-    
+
     // Handle "Browse Less Categories" button click
     browseLessBtn.on("click", function () {
         categoryItems.each(function (index) {
@@ -668,10 +668,10 @@
 
 
         </script>
-        
-        
-        
-        
+
+
+
+
         <style>
         .filter-buttons {
             margin: 20px 0;
@@ -679,7 +679,7 @@
         .search-section {
             display: none;
         }
-        
+
          .header-carousel {
         margin-bottom: 0 !important; /* Ensure no margin after carousel */
     }
@@ -690,7 +690,7 @@
 
     /* If additional gaps persist, remove unnecessary padding or margins */
     .container.mb-0 {
-        padding-top: 0 !important; 
+        padding-top: 0 !important;
         margin-top: 0 !important;
     }
 

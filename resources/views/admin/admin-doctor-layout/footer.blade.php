@@ -34,70 +34,90 @@
 <script src="https://cdn.datatables.net/buttons/2.0.1/js/buttons.html5.min.js"></script>
 
 <script>
-$(document).ready(function() {
-    $('#example2').DataTable({
-        deferRender: true,
-        responsive: true,
-        scroller: true,
-        pageLength: 25,
-        rowReorder: { selector: 'td:nth-child(2)' },
-        order: [[0, 'desc']],
-        dom: 'Bfrtip',
-        buttons: ['excelHtml5', 'csvHtml5', 'pdfHtml5']
-    });
+    $(document).ready(function() {
+        $('#example2').DataTable({
+            deferRender: true,
+            responsive: true,
+            scroller: true,
+            pageLength: 25,
+            rowReorder: {
+                selector: 'td:nth-child(2)'
+            },
+            order: [
+                [0, 'desc']
+            ],
+            dom: 'Bfrtip',
+            buttons: ['excelHtml5', 'csvHtml5', 'pdfHtml5']
+        });
 
-    $('#example1').DataTable({
-        pageLength: 25,
-        rowReorder: { selector: 'td:nth-child(2)' },
-        responsive: true,
-        order: [[0, 'asc']],
-        dom: 'Bfrtip',
-        buttons: ['excelHtml5', 'csvHtml5', 'pdfHtml5']
-    });
+        $('#example1').DataTable({
+            pageLength: 25,
+            rowReorder: {
+                selector: 'td:nth-child(2)'
+            },
+            responsive: true,
+            order: [
+                [0, 'asc']
+            ],
+            dom: 'Bfrtip',
+            buttons: ['excelHtml5', 'csvHtml5', 'pdfHtml5']
+        });
 
-    $('#example3').DataTable({
-        pageLength: 25,
-        rowReorder: { selector: 'td:nth-child(5)' },
-        responsive: true,
-        order: [[4, 'desc']],
-        dom: 'Bfrtip',
-        buttons: ['excelHtml5', 'csvHtml5', 'pdfHtml5']
-    });
+        $('#example3').DataTable({
+            pageLength: 25,
+            rowReorder: {
+                selector: 'td:nth-child(5)'
+            },
+            responsive: true,
+            order: [
+                [4, 'desc']
+            ],
+            dom: 'Bfrtip',
+            buttons: ['excelHtml5', 'csvHtml5', 'pdfHtml5']
+        });
 
-    $('#example4').DataTable({
-        pageLength: 25,
-        rowReorder: { selector: 'td:nth-child(0)' },
-        responsive: true,
-        order: [[0, 'desc']],
-        dom: 'Bfrtip',
-        buttons: ['excelHtml5', 'csvHtml5', 'pdfHtml5']
-    });
+        $('#example4').DataTable({
+            pageLength: 25,
+            rowReorder: {
+                selector: 'td:nth-child(0)'
+            },
+            responsive: true,
+            order: [
+                [0, 'desc']
+            ],
+            dom: 'Bfrtip',
+            buttons: ['excelHtml5', 'csvHtml5', 'pdfHtml5']
+        });
 
-    $('#example5').DataTable({
-        pageLength: 25,
-        rowReorder: { selector: 'td:nth-child(0)' },
-        responsive: true,
-        order: [[1, 'desc']],
-        dom: 'Bfrtip',
-        buttons: ['excelHtml5', 'csvHtml5', 'pdfHtml5']
-    });
+        $('#example5').DataTable({
+            pageLength: 25,
+            rowReorder: {
+                selector: 'td:nth-child(0)'
+            },
+            responsive: true,
+            order: [
+                [1, 'desc']
+            ],
+            dom: 'Bfrtip',
+            buttons: ['excelHtml5', 'csvHtml5', 'pdfHtml5']
+        });
 
-    $('.summernote').summernote({
-        placeholder: 'Type here...',
-        height: 300,
-        toolbar: [
-            ['style', ['style']],
-            ['font', ['bold', 'italic', 'underline', 'clear']],
-            ['fontname', ['fontname']],
-            ['fontsize', ['fontsize']],
-            ['color', ['color']],
-            ['para', ['ul', 'ol', 'paragraph']],
-            ['table', ['table']],
-            ['insert', ['link', 'picture', 'video']],
-            ['view', ['fullscreen', 'codeview', 'help']]
-        ]
+        $('.summernote').summernote({
+            placeholder: 'Type here...',
+            height: 300,
+            toolbar: [
+                ['style', ['style']],
+                ['font', ['bold', 'italic', 'underline', 'clear']],
+                ['fontname', ['fontname']],
+                ['fontsize', ['fontsize']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['table', ['table']],
+                ['insert', ['link', 'picture', 'video']],
+                ['view', ['fullscreen', 'codeview', 'help']]
+            ]
+        });
     });
-});
 </script>
 
 <!-- Custom Main Script -->
@@ -107,4 +127,5 @@ $(document).ready(function() {
 @stack('scripts')
 
 </body>
+
 </html>

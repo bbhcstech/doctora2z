@@ -498,14 +498,14 @@ $(document).ready(function () {
         
         // Try multiple possible API endpoints
         const possibleEndpoints = [
-            '/public/get-top-categories',
+            '/get-top-categories',
             '/get-top-categories',
             'https://doctora2z.com/public/get-top-categories',
             'https://doctora2z.com/get-top-categories'
         ];
         
         // Try the first endpoint
-        fetch(`/public/get-top-categories`)
+        fetch(`/get-top-categories`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -559,7 +559,7 @@ $(document).ready(function () {
 
     function fetchDataByCity(city, state) {
         console.log("Fetching data for city:", city);
-        fetch(`/public/get-clinics-by-city/${encodeURIComponent(city)}`)
+        fetch(`/get-clinics-by-city/${encodeURIComponent(city)}`)
             .then(response => response.json())
             .then(data => {
                 console.log("City data received:", data);
@@ -578,7 +578,7 @@ $(document).ready(function () {
 
     function fetchDataByState(state) {
         console.log("Fetching data for state:", state);
-        fetch(`/public/get-clinics-by-state/${encodeURIComponent(state)}`)
+        fetch(`/get-clinics-by-state/${encodeURIComponent(state)}`)
             .then(response => response.json())
             .then(data => {
                 console.log("State data received:", data);

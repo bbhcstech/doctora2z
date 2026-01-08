@@ -24,19 +24,18 @@
                 @guest
                     {{-- Login Button --}}
                     <li>
-                        <a class="nav-link btn btn-primary text-white ms-2 px-3 rounded" 
-                           href="{{ route('login') }}">
+                        <a class="nav-link btn btn-primary text-white ms-2 px-3 rounded" href="{{ route('login') }}">
                             Login
                         </a>
                     </li>
                 @else
                     {{-- User Dropdown --}}
                     <li class="nav-item dropdown ms-3">
-                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" data-bs-toggle="dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#"
+                            data-bs-toggle="dropdown">
                             <img src="{{ auth()->user()->profile_photo ?? asset('frontend/images/default-user.jpg') }}"
-                                 class="rounded-circle"
-                                 alt="User Profile"
-                                 style="width: 35px; height: 35px; object-fit: cover;">
+                                class="rounded-circle" alt="User Profile"
+                                style="width: 35px; height: 35px; object-fit: cover;">
                             <span class="ms-2">{{ auth()->user()->name }}</span>
                         </a>
 
@@ -53,7 +52,9 @@
                                 </a>
                             </li>
 
-                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
 
                             <li>
                                 <form method="POST" action="{{ route('logout') }}">

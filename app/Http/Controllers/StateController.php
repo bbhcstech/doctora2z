@@ -1,61 +1,65 @@
 <?php
-
 namespace App\Http\Controllers;
 
-use App\Models\State;
 use App\Models\Country;
+use App\Models\State;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Response;
 
 class StateController extends Controller
 {
     public function index()
     {
-        $states = State::with('country')->orderBy('id', 'desc')->get(); // Load states with their associated country
+        $states = State::with('country')
+            ->orderBy('id', 'desc')
+            ->paginate(25);
+
         return view('admin.state.index', compact('states'));
     }
 
     public function create()
     {
-        $countries = Country::all(); // Fetch all countries for the dropdown
+        $countries = Country::orderBy('name', 'asc')->get();
         return view('admin.state.create', compact('countries'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255|unique:states,name',
             'country_id' => 'required|exists:countries,id',
+            'name'       => 'required|string|max:255|unique:states,name',
         ]);
 
         State::create([
-            'name' => $request->name,
             'country_id' => $request->country_id,
+            'name'       => $request->name,
         ]);
 
-        return redirect()->route('state.index')->with('success', 'State(Part) added successfully.');
+        return redirect()->route('state.index')->with('success', 'State created successfully.');
     }
 
     public function edit($id)
     {
-        $state = State::findOrFail($id); // Find the state or throw a 404
-        $countries = Country::all(); // Fetch all countries for the dropdown
+        $state     = State::findOrFail($id);
+        $countries = Country::orderBy('name', 'asc')->get();
+
         return view('admin.state.edit', compact('state', 'countries'));
     }
 
     public function update(Request $request, $id)
     {
         $request->validate([
-            'name' => 'required|string|max:255|unique:states,name,' . $id,
             'country_id' => 'required|exists:countries,id',
+            'name'       => 'required|string|max:255|unique:states,name,' . $id,
         ]);
 
         $state = State::findOrFail($id);
         $state->update([
-            'name' => $request->name,
             'country_id' => $request->country_id,
+            'name'       => $request->name,
         ]);
 
-        return redirect()->route('state.index')->with('success', 'State(Part) updated successfully.');
+        return redirect()->route('state.index')->with('success', 'State updated successfully.');
     }
 
     public function destroy($id)
@@ -63,6 +67,83 @@ class StateController extends Controller
         $state = State::findOrFail($id);
         $state->delete();
 
-        return redirect()->route('state.index')->with('success', 'State(Part) deleted successfully.');
+        return redirect()->route('state.index')->with('success', 'State deleted successfully.');
+    }
+
+    public function bulkDelete(Request $request)
+    {
+        $stateIds = $request->ids;
+
+        if (! $stateIds) {
+            return back()->with('error', 'No states selected!');
+        }
+
+        State::whereIn('id', $stateIds)->delete();
+        return back()->with('success', 'Selected states deleted successfully!');
+    }
+
+    // ✅ Export CSV Method
+    public function exportCSV()
+    {
+        $states = State::with('country')->get();
+
+        $headers = [
+            "Content-type"        => "text/csv",
+            "Content-Disposition" => "attachment; filename=states_" . date('Y-m-d') . ".csv",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0",
+        ];
+
+        $callback = function () use ($states) {
+            $file = fopen('php://output', 'w');
+
+            // CSV Header
+            fputcsv($file, ['ID', 'State Name', 'Country', 'Created At']);
+
+            // CSV Data
+            foreach ($states as $state) {
+                fputcsv($file, [
+                    $state->id,
+                    $state->name,
+                    $state->country ? $state->country->name : 'N/A',
+                    $state->created_at ? $state->created_at->format('Y-m-d H:i:s') : 'N/A',
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return Response::stream($callback, 200, $headers);
+    }
+
+    // ✅ Export Excel Method
+    public function exportExcel()
+    {
+        // Option 1: যদি Laravel Excel প্যাকেজ ইন্সটল করা থাকে
+        // return Excel::download(new StatesExport, 'states.xlsx');
+
+        // Option 2: Temporary - CSV রিটার্ন করুন
+        return $this->exportCSV();
+
+        // Option 3: কমিং সুন মেসেজ
+        // return redirect()->route('state.index')->with('info', 'Excel export feature coming soon!');
+    }
+
+    // ✅ Export PDF Method
+    public function exportPDF()
+    {
+        // Option 1: যদি DomPDF/Barryvdh প্যাকেজ ইন্সটল করা থাকে
+        /*
+        $states = State::with('country')->get();
+        $pdf = \PDF::loadView('admin.state.export-pdf', compact('states'));
+        return $pdf->download('states.pdf');
+        */
+
+        // Option 2: Temporary - CSV রিটার্ন করুন
+        return $this->exportCSV();
+
+        // Option 3: কমিং সুন মেসেজ
+        // return redirect()->route('state.index')->with('info', 'PDF export feature coming soon!');
     }
 }

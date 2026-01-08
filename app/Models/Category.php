@@ -18,7 +18,7 @@ class Category extends Model
     
     // public function doctors()
     // {
-    //     return $this->hasMany(DoctorList::class, 'category_id', 'id');
+    //     return $this->hasMany(DoctorList::class, 'category_id', 'id');+
     // }
     public function doctors()
 {

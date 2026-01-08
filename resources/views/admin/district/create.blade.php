@@ -1,199 +1,244 @@
 @extends('admin.layout.app')
 
-@section('title', 'Add District')
+@section('title', 'Add New District')
 
 @section('content')
-<main id="main" class="main">
-  <div class="pagetitle">
-    <h1>Add District/City/Town/Village</h1>
-    <nav>
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Home</a></li>
-        <li class="breadcrumb-item"><a href="{{ route('district.index') }}">Districts/City/Town/Village</a></li>
-        <li class="breadcrumb-item active">Add</li>
-      </ol>
-    </nav>
-  </div>
+    <div class="main-content">
+        <div class="page-content">
+            <div class="container-fluid">
 
-  <div class="card" style="background-color:#d8e0f1; padding:20px; border-radius:10px;">
-    <div class="card-body">
-      <form id="districtForm" action="{{ route('district.store') }}" method="POST" novalidate>
-        @csrf
+                <!-- Start page title -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="page-title-box d-flex align-items-center justify-content-between">
+                            <div class="page-title">
+                                <h4 class="mb-0 font-size-18">Add New District</h4>
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item"><a href="{{ url('dashboard') }}">Dashboard</a></li>
+                                    <li class="breadcrumb-item"><a href="{{ route('district.index') }}">District</a></li>
+                                    <li class="breadcrumb-item active">Add New</li>
+                                </ol>
+                            </div>
+                            <div class="page-title-right">
+                                <a href="{{ route('district.index') }}" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left me-1"></i> Back to List
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End page title -->
 
-        {{-- Country --}}
-        <div class="mb-3">
-          <label for="country_id" class="form-label">Country</label>
-          <select name="country_id" id="country_id" class="form-select @error('country_id') is-invalid @enderror" required>
-            <option value="">Select Country</option>
-            @foreach($countries as $country)
-              <option value="{{ $country->id }}" {{ old('country_id') == $country->id ? 'selected' : '' }}>
-                {{ $country->name }}
-              </option>
-            @endforeach
-          </select>
-          @error('country_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                <!-- Form Card -->
+                <div class="row">
+                    <div class="col-lg-8 mx-auto">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title mb-4">District Information</h4>
+                                <p class="card-title-desc mb-5">Fill all information below to add a new district</p>
+
+                                <form action="{{ route('district.store') }}" method="POST" id="districtForm">
+                                    @csrf
+
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="mb-4">
+                                                <label for="country_id" class="form-label">
+                                                    Country <span class="text-danger">*</span>
+                                                </label>
+                                                <select class="form-select" id="country_id" name="country_id" required>
+                                                    <option value="">Select Country</option>
+                                                    @foreach ($countries as $country)
+                                                        <option value="{{ $country->id }}"
+                                                            {{ old('country_id') == $country->id ? 'selected' : '' }}>
+                                                            {{ $country->name }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                @error('country_id')
+                                                    <div class="text-danger mt-2">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="mb-4">
+                                                <label for="state_id" class="form-label">
+                                                    State <span class="text-danger">*</span>
+                                                </label>
+                                                <select class="form-select" id="state_id" name="state_id" required>
+                                                    <option value="">Select State</option>
+                                                    @foreach ($states as $state)
+                                                        <option value="{{ $state->id }}"
+                                                            {{ old('state_id') == $state->id ? 'selected' : '' }}>
+                                                            {{ $state->name }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                @error('state_id')
+                                                    <div class="text-danger mt-2">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="mb-4">
+                                                <label for="name" class="form-label">
+                                                    District Name <span class="text-danger">*</span>
+                                                </label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text bg-light border-end-0">
+                                                        <i class="fas fa-city text-success"></i>
+                                                    </span>
+                                                    <input type="text" class="form-control ps-0" id="name"
+                                                        name="name" value="{{ old('name') }}"
+                                                        placeholder="Enter district name (e.g., Los Angeles)" required>
+                                                </div>
+                                                @error('name')
+                                                    <div class="text-danger mt-2">{{ $message }}</div>
+                                                @enderror
+                                                <div class="form-text">
+                                                    Enter the full name of the district. This name must be unique.
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mt-4">
+                                        <div class="col-12">
+                                            <div class="d-flex justify-content-end gap-2">
+                                                <button type="reset" class="btn btn-light">
+                                                    <i class="fas fa-redo me-1"></i> Reset
+                                                </button>
+                                                <button type="submit" class="btn btn-primary">
+                                                    <i class="fas fa-save me-1"></i> Save District
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Form Card -->
+
+            </div>
+            <!-- container-fluid -->
         </div>
-
-        {{-- State --}}
-        <div class="mb-3">
-          <label for="state_id" class="form-label">State (Part)</label>
-          <select name="state_id" id="state_id" class="form-select @error('state_id') is-invalid @enderror" required>
-            <option value="">Select State(Part)</option>
-          </select>
-          @error('state_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
-        </div>
-
-        {{-- District name (text, required) --}}
-        <div class="mb-3">
-          <label for="name" class="form-label">District Name</label>
-          <input type="text"
-                 name="name"
-                 id="name"
-                 class="form-control @error('name') is-invalid @enderror"
-                 value="{{ old('name') }}"
-                 autocomplete="off"
-                 required>
-          @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
-        </div>
-
-        {{-- City/Town/Village name (text) --}}
-        <div class="mb-3">
-          <label for="city_name" class="form-label">City / Town / Village Name</label>
-          <input type="text"
-                 name="city_name"
-                 id="city_name"
-                 class="form-control @error('city_name') is-invalid @enderror"
-                 value="{{ old('city_name') }}"
-                 autocomplete="off"
-                 placeholder="e.g., Singur">
-          @error('city_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
-          <small class="text-muted">If you enter a pincode, city/town/village is required.</small>
-        </div>
-
-        {{-- Pincode --}}
-        <div class="mb-3">
-          <label for="pincode" class="form-label">Pincode</label>
-          <input type="text"
-                 name="pincode"
-                 id="pincode"
-                 class="form-control @error('pincode') is-invalid @enderror"
-                 maxlength="6"
-                 pattern="\d{6}"
-                 inputmode="numeric"
-                 placeholder="Enter 6-digit pincode"
-                 value="{{ old('pincode') }}"
-                 autocomplete="off">
-          @error('pincode') <div class="invalid-feedback">{{ $message }}</div> @enderror
-          <small class="text-muted">Optional. 6 digits (India PIN).</small>
-        </div>
-
-        <div class="text-end">
-          <button id="submitBtn" type="submit" class="btn btn-primary">Submit</button>
-        </div>
-      </form>
+        <!-- End Page-content -->
     </div>
-  </div>
-</main>
 
-{{-- Inline, layout-independent JS (no jQuery) --}}
-<script>
-(function(){
-  const BASE = "{{ url('/') }}"; // includes /public on your host
-  const countrySel = document.getElementById('country_id');
-  const stateSel   = document.getElementById('state_id');
-  const form       = document.getElementById('districtForm');
-  const submitBtn  = document.getElementById('submitBtn');
-  const pincodeInp = document.getElementById('pincode');
-  const cityInp    = document.getElementById('city_name');
+    <style>
+        .page-title-box {
+            padding: 20px 0;
+            background: #fff;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #f1f1f1;
+        }
 
-  function option(el, value, text, selected=false){
-    const o = document.createElement('option');
-    o.value = value; o.textContent = text;
-    if(selected) o.selected = true;
-    el.appendChild(o);
-  }
-  function reset(el, placeholder){
-    el.innerHTML = '';
-    option(el, '', placeholder);
-  }
-  function statesUrl(countryId){ return BASE + '/location/states/' + encodeURIComponent(countryId); }
+        .card {
+            border: none;
+            box-shadow: 0 0.75rem 1.5rem rgba(18, 38, 63, 0.03);
+            margin-bottom: 24px;
+            border-radius: 12px;
+        }
 
-  async function loadStates(countryId, preselect){
-    reset(stateSel, 'Loading…');
-    submitBtn.disabled = true;
+        .card-body {
+            padding: 32px;
+        }
 
-    if(!countryId){
-      reset(stateSel, 'Select State(Part)');
-      submitBtn.disabled = false;
-      return;
-    }
-    try {
-      const res = await fetch(statesUrl(countryId), { headers: { 'Accept':'application/json' }, cache:'no-store' });
-      if(!res.ok){
-        console.error('States HTTP error', res.status);
-        reset(stateSel, 'Select State(Part)');
-        submitBtn.disabled = false;
-        return;
-      }
-      const states = await res.json();
-      reset(stateSel, 'Select State(Part)');
-      if(Array.isArray(states) && states.length){
-        states.forEach(s => option(stateSel, s.id, s.name, String(preselect)===String(s.id)));
-      } else {
-        option(stateSel, '', 'No states found');
-      }
-    } catch(e){
-      console.error('States fetch failed', e);
-      reset(stateSel, 'Select State(Part)');
-    } finally {
-      submitBtn.disabled = false;
-    }
-  }
+        .form-label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 8px;
+        }
 
-  // country change → load states
-  countrySel.addEventListener('change', ()=>loadStates(countrySel.value, null));
+        .form-control,
+        .form-select {
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid #ced4da;
+        }
 
-  // normalize pincode to digits only and max 6
-  pincodeInp.addEventListener('input', () => {
-    const digits = pincodeInp.value.replace(/\D+/g,'').slice(0,6);
-    if (pincodeInp.value !== digits) pincodeInp.value = digits;
-  });
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #4361ee;
+            box-shadow: 0 0 0 0.15rem rgba(67, 97, 238, 0.25);
+        }
 
-  // client-side rule: if pincode filled, city_name required
-  form.addEventListener('submit', (e) => {
-    const pin = pincodeInp.value.trim();
-    const city = cityInp.value.trim();
-    if (pin.length > 0 && city.length === 0) {
-      e.preventDefault();
-      cityInp.classList.add('is-invalid');
-      let fb = cityInp.parentElement.querySelector('.invalid-feedback');
-      if (!fb) {
-        fb = document.createElement('div');
-        fb.className = 'invalid-feedback';
-        cityInp.parentElement.appendChild(fb);
-      }
-      fb.textContent = 'City/Town/Village is required when pincode is provided.';
-      cityInp.focus();
-    }
-  });
+        .input-group-text {
+            background-color: #f8f9fa;
+            border: 1px solid #ced4da;
+            padding: 12px 16px;
+        }
 
-  // remove error state when user types city
-  cityInp.addEventListener('input', () => {
-    cityInp.classList.remove('is-invalid');
-    const fb = cityInp.parentElement.querySelector('.invalid-feedback');
-    if (fb) fb.textContent = '';
-  });
+        .card-title-desc {
+            color: #6c757d;
+            margin-bottom: 24px;
+        }
 
-  // initial autoload
-  document.addEventListener('DOMContentLoaded', ()=>{
-    let initialCountry = countrySel.value;
-    if(!initialCountry){
-      const first = Array.from(countrySel.options).find(o => o.value);
-      if(first){ first.selected = true; initialCountry = first.value; }
-    }
-    const preState = "{{ old('state_id') }}";
-    if(initialCountry){ loadStates(initialCountry, preState); }
-  });
-})();
-</script>
+        .form-text {
+            color: #6c757d;
+            font-size: 13px;
+            margin-top: 6px;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background-color: #4361ee;
+            border-color: #4361ee;
+        }
+
+        .btn-primary:hover {
+            background-color: #3a56d4;
+            border-color: #3a56d4;
+        }
+    </style>
+
+    <!-- JavaScript for dependent dropdown -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const countrySelect = document.getElementById('country_id');
+            const stateSelect = document.getElementById('state_id');
+
+            if (countrySelect) {
+                countrySelect.addEventListener('change', function() {
+                    const countryId = this.value;
+
+                    // Clear state options
+                    stateSelect.innerHTML = '<option value="">Select State</option>';
+
+                    if (countryId) {
+                        // Fetch states for selected country
+                        fetch(`/api/states-by-country/${countryId}`)
+                            .then(response => response.json())
+                            .then(states => {
+                                states.forEach(state => {
+                                    const option = document.createElement('option');
+                                    option.value = state.id;
+                                    option.textContent = state.name;
+                                    stateSelect.appendChild(option);
+                                });
+                            })
+                            .catch(error => {
+                                console.error('Error fetching states:', error);
+                            });
+                    }
+                });
+            }
+        });
+    </script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 @endsection
