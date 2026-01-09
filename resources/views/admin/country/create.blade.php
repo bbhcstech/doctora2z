@@ -52,7 +52,8 @@
                                                     </span>
                                                     <input type="text" class="form-control ps-0" id="name"
                                                         name="name"
-                                                        placeholder="Enter country name (e.g., United States)" required>
+                                                        placeholder="Enter country name (e.g., United States)"
+                                                        value="{{ old('name') }}" required>
                                                 </div>
                                                 @error('name')
                                                     <div class="text-danger mt-2">{{ $message }}</div>

@@ -211,31 +211,25 @@
             const countrySelect = document.getElementById('country_id');
             const stateSelect = document.getElementById('state_id');
 
-            if (countrySelect) {
-                countrySelect.addEventListener('change', function() {
-                    const countryId = this.value;
+            countrySelect.addEventListener('change', function() {
+                const countryId = this.value;
 
-                    // Clear state options
-                    stateSelect.innerHTML = '<option value="">Select State</option>';
+                stateSelect.innerHTML = '<option value="">Select State</option>';
 
-                    if (countryId) {
-                        // Fetch states for selected country
-                        fetch(`/api/states-by-country/${countryId}`)
-                            .then(response => response.json())
-                            .then(states => {
-                                states.forEach(state => {
-                                    const option = document.createElement('option');
-                                    option.value = state.id;
-                                    option.textContent = state.name;
-                                    stateSelect.appendChild(option);
-                                });
-                            })
-                            .catch(error => {
-                                console.error('Error fetching states:', error);
-                            });
-                    }
-                });
-            }
+                if (!countryId) return;
+
+                fetch(`/district/api/states-by-country/${countryId}`)
+                    .then(res => res.json())
+                    .then(states => {
+                        states.forEach(state => {
+                            const opt = document.createElement('option');
+                            opt.value = state.id;
+                            opt.textContent = state.name;
+                            stateSelect.appendChild(opt);
+                        });
+                    })
+                    .catch(err => console.error(err));
+            });
         });
     </script>
 

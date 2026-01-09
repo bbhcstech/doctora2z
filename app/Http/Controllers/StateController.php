@@ -8,11 +8,14 @@ use Illuminate\Support\Facades\Response;
 
 class StateController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $perPage = $request->get('per_page', 25);
+
         $states = State::with('country')
             ->orderBy('id', 'desc')
-            ->paginate(25);
+            ->paginate($perPage)
+            ->withQueryString(); // ⭐ MUST
 
         return view('admin.state.index', compact('states'));
     }
@@ -68,18 +71,6 @@ class StateController extends Controller
         $state->delete();
 
         return redirect()->route('state.index')->with('success', 'State deleted successfully.');
-    }
-
-    public function bulkDelete(Request $request)
-    {
-        $stateIds = $request->ids;
-
-        if (! $stateIds) {
-            return back()->with('error', 'No states selected!');
-        }
-
-        State::whereIn('id', $stateIds)->delete();
-        return back()->with('success', 'Selected states deleted successfully!');
     }
 
     // ✅ Export CSV Method
@@ -145,5 +136,42 @@ class StateController extends Controller
 
         // Option 3: কমিং সুন মেসেজ
         // return redirect()->route('state.index')->with('info', 'PDF export feature coming soon!');
+    }
+
+    public function bulkDelete(Request $request)
+    {
+        // Get the IDs from request
+        $ids = $request->input('ids');
+
+        // Debug: Uncomment to see what's coming
+        // dd($ids, $request->all());
+
+        // If ids is null or empty, return error
+        if (! $ids) {
+            return redirect()->back()
+                ->with('error', 'No states selected for deletion.');
+        }
+
+        // If ids is a string (comma separated), convert to array
+        if (is_string($ids)) {
+            $ids = explode(',', $ids);
+        }
+
+        // Ensure we have an array and sanitize
+        $ids = array_map('intval', (array) $ids);
+        $ids = array_filter($ids); // Remove empty values
+        $ids = array_unique($ids); // Remove duplicates
+
+        // If no valid IDs left, return error
+        if (empty($ids)) {
+            return redirect()->back()
+                ->with('error', 'No valid states selected for deletion.');
+        }
+
+        // Delete the states
+        State::whereIn('id', $ids)->delete();
+
+        return redirect()->route('state.index')
+            ->with('success', count($ids) . ' states deleted successfully.');
     }
 }

@@ -203,18 +203,27 @@ class DistrictAjaxController extends Controller
         return Excel::download($export, 'districts.csv', \Maatwebsite\Excel\Excel::CSV);
     }
 
+    
     public function exportPdf(Request $request)
     {
-        [$rows, $headings] = $this->getExportRows($request);
+        $rows = Pincode::with(['country', 'state', 'district', 'city'])
+            ->get()
+            ->map(function ($p) {
+                return [
+                    'country'  => $p->country?->name,
+                    'state'    => $p->state?->name,
+                    'district' => $p->district?->name,
+                    'city'     => $p->city?->name,
+                    'pincode'  => $p->pincode,
+                ];
+            });
 
-        $html = view('admin.district.export_pdf', [
-            'headings' => $headings,
-            'rows'     => $rows,
-            'title'    => 'Districts Export',
-        ])->render();
+        $pdf = Pdf::loadView('admin.district.export_pdf', [
+            'rows'  => $rows,
+            'title' => 'Pincode Export',
+        ])->setPaper('a4', 'portrait');
 
-        $pdf = Pdf::loadHTML($html)->setPaper('a4', 'portrait');
-        return $pdf->download('districts.pdf');
+        return $pdf->download('pincodes.pdf');
     }
 
     private function getExportRows(Request $request): array

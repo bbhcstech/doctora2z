@@ -59,6 +59,28 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="d-flex justify-content-end gap-2">
+
+
+                                            {{-- 🔍 Search --}}
+                                            <form method="GET" action="{{ route('district.index') }}" class="d-inline">
+                                                <div class="input-group input-group-sm">
+                                                    <input type="text" name="search" value="{{ request('search') }}"
+                                                        class="form-control"
+                                                        placeholder="Search district / state / pincode">
+                                                    <button class="btn btn-outline-secondary" type="submit">
+                                                        <i class="fas fa-search"></i>
+                                                    </button>
+                                                </div>
+                                            </form>
+
+                                            {{-- 📥 Import --}}
+                                            <a href="{{ route('district.import.form') }}" class="btn btn-outline-primary">
+                                                <i class="fas fa-upload me-1"></i> Import
+                                            </a>
+
+
+
+                                            {{-- ✅ Bulk Delete Form --}}
                                             <form id="bulkDeleteForm" action="{{ route('district.bulkDelete') }}"
                                                 method="POST" class="d-inline">
                                                 @csrf
@@ -97,129 +119,69 @@
                                     <table class="table table-hover table-centered mb-0">
                                         <thead class="table-light">
                                             <tr>
-                                                <th style="width: 50px;">
-                                                    <div class="form-check">
-                                                        <input type="checkbox" class="form-check-input"
-                                                            id="selectAllCurrentPage">
-                                                        <label class="form-check-label" for="selectAllCurrentPage"></label>
-                                                    </div>
+                                                {{-- Select All Checkbox --}}
+                                                <th style="width: 40px;">
+                                                    <input type="checkbox" id="selectAllCurrentPage">
                                                 </th>
-                                                <th style="width: 60px;">#</th>
-                                                <th style="width: 100px;">District ID</th>
-                                                <th>District Name</th>
-                                                <th>State</th>
+
+                                                {{-- Serial Number --}}
+                                                <th style="width: 50px;">#</th>
+
                                                 <th>Country</th>
-                                                <th style="width: 120px;" class="text-center">Actions</th>
+                                                <th>State</th>
+                                                <th>District Name</th>
+                                                <th>Area / City</th>
+                                                <th>Pincode</th>
+                                                <th class="text-center" style="width:120px;">Actions</th>
                                             </tr>
                                         </thead>
+
                                         <tbody>
-                                            @php
-                                                $startIndex = ($districts->currentPage() - 1) * $districts->perPage();
-                                            @endphp
-                                            @forelse ($districts as $index => $district)
+                                            @forelse ($districts as $index => $pin)
                                                 <tr>
+
+                                                    {{-- Checkbox --}}
                                                     <td>
-                                                        <div class="form-check">
-                                                            <input type="checkbox" class="form-check-input districtCheckbox"
-                                                                name="ids[]" value="{{ $district->id }}">
-                                                        </div>
+                                                        <input type="checkbox" class="form-check-input districtCheckbox"
+                                                            name="ids[]" value="{{ $pin->district_id }}">
                                                     </td>
-                                                    <td>
-                                                        <span class="fw-medium">{{ $startIndex + $index + 1 }}</span>
-                                                    </td>
-                                                    <td>
-                                                        <span class="badge bg-light text-dark">#{{ $district->id }}</span>
-                                                    </td>
-                                                    <td>
-                                                        <div class="d-flex align-items-center">
-                                                            <div class="avatar-xs me-2">
-                                                                <div
-                                                                    class="avatar-title bg-success-subtle text-success rounded-circle">
-                                                                    <i class="fas fa-city"></i>
-                                                                </div>
-                                                            </div>
-                                                            <div>
-                                                                <h5 class="font-size-14 mb-0">{{ $district->name }}</h5>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        @if ($district->state)
-                                                            <div class="d-flex align-items-center">
-                                                                <div class="avatar-xs me-2">
-                                                                    <div
-                                                                        class="avatar-title bg-info-subtle text-info rounded-circle">
-                                                                        <i class="fas fa-map-marker-alt"></i>
-                                                                    </div>
-                                                                </div>
-                                                                <div>
-                                                                    <span
-                                                                        class="font-size-13">{{ $district->state->name }}</span>
-                                                                </div>
-                                                            </div>
-                                                        @else
-                                                            <span class="text-muted">N/A</span>
-                                                        @endif
-                                                    </td>
-                                                    <td>
-                                                        @if ($district->state && $district->state->country)
-                                                            <div class="d-flex align-items-center">
-                                                                <div class="avatar-xs me-2">
-                                                                    <div
-                                                                        class="avatar-title bg-primary-subtle text-primary rounded-circle">
-                                                                        <i class="fas fa-globe"></i>
-                                                                    </div>
-                                                                </div>
-                                                                <div>
-                                                                    <span
-                                                                        class="font-size-13">{{ $district->state->country->name }}</span>
-                                                                </div>
-                                                            </div>
-                                                        @else
-                                                            <span class="text-muted">N/A</span>
-                                                        @endif
-                                                    </td>
+
+                                                    {{-- Serial --}}
+                                                    <td>{{ $districts->firstItem() + $index }}</td>
+
+                                                    {{-- Country --}}
+                                                    <td>{{ $pin->district?->state?->country?->name ?? '—' }}</td>
+
+                                                    {{-- State --}}
+                                                    <td>{{ $pin->district?->state?->name ?? '—' }}</td>
+
+                                                    {{-- District --}}
+                                                    <td>{{ $pin->district?->name ?? '—' }}</td>
+
+                                                    {{-- Area / City --}}
+                                                    <td>{{ $pin->city?->name ?? '—' }}</td>
+
+                                                    {{-- Pincode --}}
+                                                    <td>{{ $pin->pincode }}</td>
+
+                                                    {{-- Actions --}}
                                                     <td class="text-center">
-                                                        <div class="btn-group btn-group-sm" role="group">
-                                                            <a href="{{ route('district.edit', $district->id) }}"
-                                                                class="btn btn-outline-warning btn-sm"
-                                                                data-bs-toggle="tooltip" title="Edit">
-                                                                <i class="fas fa-edit"></i>
-                                                            </a>
-                                                            <form action="{{ route('district.destroy', $district->id) }}"
-                                                                method="POST" class="d-inline">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="submit"
-                                                                    class="btn btn-outline-danger btn-sm"
-                                                                    onclick="return confirm('Are you sure you want to delete this district?')"
-                                                                    data-bs-toggle="tooltip" title="Delete">
-                                                                    <i class="fas fa-trash-alt"></i>
-                                                                </button>
-                                                            </form>
-                                                        </div>
+                                                        <a href="{{ route('district.edit', $pin->district_id) }}"
+                                                            class="btn btn-sm btn-warning">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
                                                     </td>
+
                                                 </tr>
                                             @empty
                                                 <tr>
-                                                    <td colspan="7" class="text-center py-5">
-                                                        <div class="empty-state">
-                                                            <div class="empty-state-icon">
-                                                                <i class="fas fa-city"
-                                                                    style="font-size: 60px; color: #dee2e6;"></i>
-                                                            </div>
-                                                            <h5 class="empty-state-title mt-3">No Districts Found</h5>
-                                                            <p class="empty-state-subtitle mb-4">Get started by creating
-                                                                your first district</p>
-                                                            <a href="{{ route('district.create') }}"
-                                                                class="btn btn-primary">
-                                                                <i class="fas fa-plus-circle me-1"></i> Add First District
-                                                            </a>
-                                                        </div>
-                                                    </td>
+                                                    <td colspan="8" class="text-center">No data found</td>
                                                 </tr>
                                             @endforelse
                                         </tbody>
+
+
+
                                     </table>
                                 </div>
                                 <!-- End Table -->

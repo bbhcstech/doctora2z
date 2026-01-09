@@ -495,6 +495,9 @@ Route::middleware('auth')->group(function () {
             Route::get('/export/pdf', [DistrictAjaxController::class, 'exportPdf'])->name('export.pdf');
         });
 
+        Route::get('/district/export/pdf', [DistrictAjaxController::class, 'exportPdf'])
+            ->name('district.export.pdf');
+
         /* -------------------- Pincodes -------------------- */
         Route::prefix('pincodes')->name('pincodes.')->group(function () {
             // New: returns names + ids for the table

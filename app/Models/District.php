@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -21,7 +20,7 @@ class District extends Model
     // one district can have many pincodes
     public function pincodes()
     {
-        return $this->hasMany(Pincode::class, 'district_id');
+        return $this->hasMany(Pincode::class);
     }
 
     // if you want easy access to a primary pincode

@@ -3,15 +3,26 @@ namespace App\Http\Controllers;
 
 use App\Models\Country;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
 
 class CountryController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $countries = Country::orderBy('id', 'desc')->paginate(25);
-        return view('admin.country.index', compact('countries'));
+        $search = $request->search;
+
+        $countries = Country::when($search, function ($q) use ($search) {
+            $q->where('name', 'like', "%{$search}%")
+                ->orWhere('id', 'like', "%{$search}%");
+        })
+            ->orderBy('id', 'desc')
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('admin.country.index', compact('countries', 'search'));
     }
+    
 
     public function create()
     {
@@ -20,11 +31,15 @@ class CountryController extends Controller
 
     public function store(Request $request)
     {
+        // ✅ শুধু name validation
         $request->validate([
             'name' => 'required|string|max:255|unique:countries,name',
         ]);
 
-        Country::create(['name' => $request->name]);
+        // ✅ শুধু name save করুন
+        Country::create([
+            'name' => $request->name,
+        ]);
 
         return redirect()->route('country.index')->with('success', 'Country created successfully.');
     }
@@ -37,12 +52,17 @@ class CountryController extends Controller
 
     public function update(Request $request, $id)
     {
+        // ✅ শুধু name validation
         $request->validate([
             'name' => 'required|string|max:255|unique:countries,name,' . $id,
         ]);
 
         $country = Country::findOrFail($id);
-        $country->update(['name' => $request->name]);
+
+        // ✅ শুধু name update করুন
+        $country->update([
+            'name' => $request->name,
+        ]);
 
         return redirect()->route('country.index')->with('success', 'Country updated successfully.');
     }
@@ -56,14 +76,51 @@ class CountryController extends Controller
 
     public function bulkDelete(Request $request)
     {
+        // Debug: Log the request data
+        Log::info('Bulk Delete Request Data:', $request->all());
+
+        // Get the IDs from request
         $countryIds = $request->ids;
 
+        // If no IDs provided
         if (! $countryIds) {
-            return back()->with('error', 'No countries selected!');
+            return back()->with('error', 'No countries selected for deletion!');
         }
 
-        Country::whereIn('id', $countryIds)->delete();
-        return back()->with('success', 'Selected countries deleted successfully!');
+        // If IDs come as string (comma-separated), convert to array
+        if (is_string($countryIds)) {
+            $countryIds = explode(',', $countryIds);
+        }
+
+        // Ensure we have an array
+        if (! is_array($countryIds)) {
+            return back()->with('error', 'Invalid data format for deletion!');
+        }
+
+        // Convert all values to integers and remove empty values
+        $countryIds = array_map('intval', $countryIds);
+        $countryIds = array_filter($countryIds); // Remove 0 values
+        $countryIds = array_unique($countryIds); // Remove duplicates
+
+        // If no valid IDs after processing
+        if (empty($countryIds)) {
+            return back()->with('error', 'No valid countries selected for deletion!');
+        }
+
+        // Log the processed IDs
+        Log::info('Processed IDs for deletion:', $countryIds);
+
+        // Delete countries
+        try {
+            $deletedCount = Country::whereIn('id', $countryIds)->delete();
+
+            Log::info('Deleted count:', ['count' => $deletedCount]);
+
+            return back()->with('success', $deletedCount . ' countries deleted successfully!');
+        } catch (\Exception $e) {
+            Log::error('Bulk delete error: ' . $e->getMessage());
+            return back()->with('error', 'Error occurred while deleting countries: ' . $e->getMessage());
+        }
     }
 
     // ✅ CSV Export Method
@@ -82,7 +139,7 @@ class CountryController extends Controller
         $callback = function () use ($countries) {
             $file = fopen('php://output', 'w');
 
-            // CSV Header
+            // CSV Header - শুধু name এবং timestamps
             fputcsv($file, ['ID', 'Country Name', 'Created At', 'Updated At']);
 
             // CSV Data
@@ -104,30 +161,12 @@ class CountryController extends Controller
     // ✅ Excel Export Method
     public function exportExcel()
     {
-        // Option 1: যদি Laravel Excel প্যাকেজ থাকে
-        // return Excel::download(new CountriesExport, 'countries.xlsx');
-
-        // Option 2: Temporary - CSV রিটার্ন করুন (একই কাজ করবে)
         return $this->exportCSV();
-
-        // Option 3: কমিং সুন মেসেজ
-        // return redirect()->route('country.index')->with('info', 'Excel export feature coming soon!');
     }
 
     // ✅ PDF Export Method
     public function exportPDF()
     {
-        // Option 1: যদি DomPDF/Barryvdh প্যাকেজ থাকে
-        /*
-        $countries = Country::all();
-        $pdf = \PDF::loadView('admin.country.export-pdf', compact('countries'));
-        return $pdf->download('countries.pdf');
-        */
-
-        // Option 2: Temporary - CSV রিটার্ন করুন (একই কাজ করবে)
         return $this->exportCSV();
-
-        // Option 3: কমিং সুন মেসেজ
-        // return redirect()->route('country.index')->with('info', 'PDF export feature coming soon!');
     }
 }

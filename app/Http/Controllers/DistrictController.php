@@ -3,16 +3,52 @@ namespace App\Http\Controllers;
 
 use App\Models\Country;
 use App\Models\District;
+use App\Models\Pincode;
 use App\Models\State;
 use Illuminate\Http\Request;
 
 class DistrictController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $districts = District::with(['state', 'state.country'])
+        $search = $request->search;
+
+        $districts = Pincode::with([
+            'district',
+            'district.state',
+            'district.state.country',
+            'city',
+        ])
+            ->when($search, function ($q) use ($search) {
+                $q->where(function ($qq) use ($search) {
+
+                    // District name
+                    $qq->whereHas('district', function ($q1) use ($search) {
+                        $q1->where('name', 'like', "%{$search}%");
+                    })
+
+                    // State name
+                        ->orWhereHas('district.state', function ($q2) use ($search) {
+                            $q2->where('name', 'like', "%{$search}%");
+                        })
+
+                    // Country name
+                        ->orWhereHas('district.state.country', function ($q3) use ($search) {
+                            $q3->where('name', 'like', "%{$search}%");
+                        })
+
+                    // Area / City
+                        ->orWhereHas('city', function ($q4) use ($search) {
+                            $q4->where('name', 'like', "%{$search}%");
+                        })
+
+                    // Pincode
+                        ->orWhere('pincode', 'like', "%{$search}%");
+                });
+            })
             ->orderBy('id', 'desc')
-            ->paginate(25);
+            ->paginate(25)
+            ->withQueryString();
 
         return view('admin.district.index', compact('districts'));
     }

@@ -59,14 +59,42 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="d-flex justify-content-end gap-2">
+
+
+                                            <form method="GET" action="{{ route('state.index') }}">
+                                                <select name="per_page" class="form-select form-select-sm"
+                                                    onchange="this.form.submit()" style="width:90px">
+                                                    <option value="25"
+                                                        {{ request('per_page', 25) == 25 ? 'selected' : '' }}>25</option>
+                                                    <option value="50"
+                                                        {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
+                                                    <option value="100"
+                                                        {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
+                                                </select>
+                                            </form>
+
+                                            {{-- ✅ Import Button --}}
+                                            <a href="{{ route('states.import.form') }}" class="btn btn-outline-primary">
+                                                <i class="fas fa-file-import me-1"></i> Import
+                                            </a>
+
+                                            
+
+
+
                                             <form id="bulkDeleteForm" action="{{ route('state.bulkDelete') }}"
                                                 method="POST" class="d-inline">
                                                 @csrf
                                                 @method('DELETE')
+
+                                                <!-- ✅ MUST -->
+                                                <input type="hidden" name="ids" id="selectedIds">
+
                                                 <button type="submit" class="btn btn-danger" id="deleteSelected" disabled>
                                                     <i class="fas fa-trash-alt me-1"></i> Delete Selected
                                                 </button>
                                             </form>
+
                                             <div class="btn-group">
                                                 <button type="button" class="btn btn-outline-success dropdown-toggle"
                                                     data-bs-toggle="dropdown">
@@ -207,23 +235,23 @@
 
                                 <!-- Pagination and Info -->
                                 @if ($states->hasPages())
-                                    <div class="row mt-4">
-                                        <div class="col-sm-6">
+                                    <div class="row mt-4 align-items-center">
+                                        <div class="col-md-6 col-12 mb-2 mb-md-0">
                                             <div class="text-muted">
-                                                Showing <strong>{{ $states->firstItem() }}</strong> to
-                                                <strong>{{ $states->lastItem() }}</strong> of
-                                                <strong>{{ $states->total() }}</strong> entries
+                                                Showing <strong>{{ $states->firstItem() }}</strong>
+                                                to <strong>{{ $states->lastItem() }}</strong>
+                                                of <strong>{{ $states->total() }}</strong> results
                                             </div>
                                         </div>
-                                        <div class="col-sm-6">
-                                            <div class="float-end">
-                                                <nav aria-label="Page navigation">
-                                                    {{ $states->links('pagination::bootstrap-5') }}
-                                                </nav>
+
+                                        <div class="col-md-6 col-12">
+                                            <div class="d-flex justify-content-end">
+                                                {{ $states->links('pagination::bootstrap-5') }}
                                             </div>
                                         </div>
                                     </div>
                                 @endif
+
 
                             </div>
                             <!-- End Card Body -->
@@ -380,140 +408,65 @@
     <!-- JavaScript -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('State Management Page Loaded');
 
-            // Get elements
             const selectAll = document.getElementById('selectAllCurrentPage');
-            const deleteBtn = document.getElementById('deleteSelected');
             const checkboxes = document.querySelectorAll('.stateCheckbox');
+            const deleteBtn = document.getElementById('deleteSelected');
+            const selectedIdsInput = document.getElementById('selectedIds');
             const form = document.getElementById('bulkDeleteForm');
-            const exportLinks = document.querySelectorAll('.export-link');
 
-            // Initialize tooltips
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl);
-            });
+            function updateSelected() {
+                let ids = [];
+                checkboxes.forEach(cb => {
+                    if (cb.checked) ids.push(cb.value);
+                });
 
-            // 1. Select All functionality
+                selectedIdsInput.value = ids.join(',');
+                deleteBtn.disabled = ids.length === 0;
+
+                deleteBtn.innerHTML = ids.length ?
+                    `<i class="fas fa-trash-alt me-1"></i> Delete Selected (${ids.length})` :
+                    `<i class="fas fa-trash-alt me-1"></i> Delete Selected`;
+            }
+
+            // Select all (current page only)
             if (selectAll) {
                 selectAll.addEventListener('change', function() {
-                    console.log('Select All:', this.checked);
-                    checkboxes.forEach(checkbox => {
-                        checkbox.checked = this.checked;
-                    });
-                    updateDeleteButton();
+                    checkboxes.forEach(cb => cb.checked = this.checked);
+                    updateSelected();
                 });
             }
 
-            // 2. Individual checkbox functionality
-            checkboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', function() {
-                    updateSelectAll();
-                    updateDeleteButton();
-                });
+            // Individual checkbox
+            checkboxes.forEach(cb => {
+                cb.addEventListener('change', updateSelected);
             });
 
-            // 3. Update Select All checkbox
-            function updateSelectAll() {
-                if (!selectAll) return;
-
-                const checkedCount = getCheckedCount();
-                const totalCount = checkboxes.length;
-
-                selectAll.checked = checkedCount === totalCount && totalCount > 0;
-
-                // Indeterminate state
-                if (selectAll.indeterminate !== undefined) {
-                    selectAll.indeterminate = checkedCount > 0 && checkedCount < totalCount;
-                }
-            }
-
-            // 4. Update Delete button
-            function updateDeleteButton() {
-                if (!deleteBtn) return;
-
-                const checkedCount = getCheckedCount();
-                deleteBtn.disabled = checkedCount === 0;
-
-                if (checkedCount > 0) {
-                    deleteBtn.innerHTML = `<i class="fas fa-trash-alt me-1"></i> Delete Selected (${checkedCount})`;
-                } else {
-                    deleteBtn.innerHTML = `<i class="fas fa-trash-alt me-1"></i> Delete Selected`;
-                }
-            }
-
-            // 5. Get checked count
-            function getCheckedCount() {
-                let count = 0;
-                checkboxes.forEach(checkbox => {
-                    if (checkbox.checked) count++;
-                });
-                return count;
-            }
-
-            // 6. Form submission
+            // Confirm before submit
             if (form) {
                 form.addEventListener('submit', function(e) {
-                    const checkedCount = getCheckedCount();
+                    e.preventDefault();
 
-                    if (checkedCount === 0) {
-                        e.preventDefault();
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'No Selection',
-                            text: 'Please select at least one state to delete.',
-                            confirmButtonColor: '#4361ee',
-                        });
-                        return false;
+                    if (!selectedIdsInput.value) {
+                        Swal.fire('Warning', 'Please select at least one state', 'warning');
+                        return;
                     }
 
-                    e.preventDefault();
                     Swal.fire({
                         title: 'Are you sure?',
-                        text: `You are about to delete ${checkedCount} selected states. This action cannot be undone!`,
+                        text: 'Selected states will be permanently deleted!',
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#4361ee',
-                        cancelButtonColor: '#6c757d',
-                        confirmButtonText: 'Yes, delete it!',
-                        cancelButtonText: 'Cancel'
-                    }).then((result) => {
+                        confirmButtonText: 'Yes, delete'
+                    }).then(result => {
                         if (result.isConfirmed) {
-                            // Show loading
-                            deleteBtn.disabled = true;
-                            deleteBtn.innerHTML =
-                                '<i class="fas fa-spinner fa-spin me-1"></i> Deleting...';
-
-                            // Submit form
                             form.submit();
                         }
                     });
-
-                    return false;
                 });
             }
 
-            // 7. Export link handling with loading indication
-            exportLinks.forEach(link => {
-                link.addEventListener('click', function(e) {
-                    console.log('Export clicked:', this.href);
-
-                    // Optional: Add loading indicator
-                    const originalHTML = this.innerHTML;
-                    this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Loading...';
-                    this.classList.add('disabled');
-
-                    // Reset after 3 seconds (in case download doesn't start)
-                    setTimeout(() => {
-                        this.innerHTML = originalHTML;
-                        this.classList.remove('disabled');
-                    }, 3000);
-                });
-            });
-
-            // Initialize
-            updateDeleteButton();
         });
     </script>
 
